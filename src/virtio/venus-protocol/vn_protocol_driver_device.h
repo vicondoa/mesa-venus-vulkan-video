@@ -40175,10 +40175,6 @@ static inline VkResult vn_decode_vkGetPhysicalDeviceVideoFormatPropertiesKHR_rep
     }
     if (vn_peek_array_size(dec)) {
         const uint32_t iter_count = vn_decode_array_size(dec, (pVideoFormatPropertyCount ? *pVideoFormatPropertyCount : 0));
-        if (iter_count > 256) {
-            vn_cs_decoder_set_fatal(dec);
-            return;
-        }
         for (uint32_t i = 0; i < iter_count; i++)
             vn_decode_VkVideoFormatPropertiesKHR(dec, &pVideoFormatProperties[i]);
     } else {

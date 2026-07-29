@@ -1712,10 +1712,6 @@ static inline VkResult vn_decode_vkGetVideoSessionMemoryRequirementsKHR_reply(st
     }
     if (vn_peek_array_size(dec)) {
         const uint32_t iter_count = vn_decode_array_size(dec, (pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0));
-        if (iter_count > 64) {
-            vn_cs_decoder_set_fatal(dec);
-            return;
-        }
         for (uint32_t i = 0; i < iter_count; i++)
             vn_decode_VkVideoSessionMemoryRequirementsKHR(dec, &pMemoryRequirements[i]);
     } else {
