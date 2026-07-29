@@ -400,6 +400,14 @@ vn_sizeof_VkImageCreateInfo_pnext(const void *val)
             size += vn_sizeof_VkImageCreateInfo_pnext(((const VkImageStencilUsageCreateInfo *)pnext)->pNext);
             size += vn_sizeof_VkImageStencilUsageCreateInfo_self((const VkImageStencilUsageCreateInfo *)pnext);
             return size;
+        case VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(24 /* VK_KHR_video_queue */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkImageCreateInfo_pnext(((const VkVideoProfileListInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoProfileListInfoKHR_self((const VkVideoProfileListInfoKHR *)pnext);
+            return size;
         case VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DATA_CREATE_INFO_EXT:
             if (!vn_cs_renderer_protocol_has_extension(136 /* VK_EXT_descriptor_heap */))
                 break;
@@ -496,6 +504,14 @@ vn_encode_VkImageCreateInfo_pnext(struct vn_cs_encoder *enc, const void *val)
             vn_encode_VkStructureType(enc, &pnext->sType);
             vn_encode_VkImageCreateInfo_pnext(enc, ((const VkImageStencilUsageCreateInfo *)pnext)->pNext);
             vn_encode_VkImageStencilUsageCreateInfo_self(enc, (const VkImageStencilUsageCreateInfo *)pnext);
+            return;
+        case VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(24 /* VK_KHR_video_queue */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkImageCreateInfo_pnext(enc, ((const VkVideoProfileListInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoProfileListInfoKHR_self(enc, (const VkVideoProfileListInfoKHR *)pnext);
             return;
         case VK_STRUCTURE_TYPE_OPAQUE_CAPTURE_DATA_CREATE_INFO_EXT:
             if (!vn_cs_renderer_protocol_has_extension(136 /* VK_EXT_descriptor_heap */))

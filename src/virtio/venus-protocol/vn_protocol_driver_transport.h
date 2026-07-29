@@ -11,6 +11,789 @@
 #include "vn_ring.h"
 #include "vn_protocol_driver_structs.h"
 
+/* struct VkVideoSessionCreateInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoSessionCreateInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionCreateInfoKHR_self(const VkVideoSessionCreateInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->queueFamilyIndex);
+    size += vn_sizeof_VkFlags(&val->flags);
+    size += vn_sizeof_simple_pointer(val->pVideoProfile);
+    if (val->pVideoProfile)
+        size += vn_sizeof_VkVideoProfileInfoKHR(val->pVideoProfile);
+    size += vn_sizeof_VkFormat(&val->pictureFormat);
+    size += vn_sizeof_VkExtent2D(&val->maxCodedExtent);
+    size += vn_sizeof_VkFormat(&val->referencePictureFormat);
+    size += vn_sizeof_uint32_t(&val->maxDpbSlots);
+    size += vn_sizeof_uint32_t(&val->maxActiveReferencePictures);
+    size += vn_sizeof_simple_pointer(val->pStdHeaderVersion);
+    if (val->pStdHeaderVersion)
+        size += vn_sizeof_VkExtensionProperties(val->pStdHeaderVersion);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionCreateInfoKHR(const VkVideoSessionCreateInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoSessionCreateInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoSessionCreateInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoSessionCreateInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoSessionCreateInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoSessionCreateInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_uint32_t(enc, &val->queueFamilyIndex);
+    vn_encode_VkFlags(enc, &val->flags);
+    if (vn_encode_simple_pointer(enc, val->pVideoProfile))
+        vn_encode_VkVideoProfileInfoKHR(enc, val->pVideoProfile);
+    vn_encode_VkFormat(enc, &val->pictureFormat);
+    vn_encode_VkExtent2D(enc, &val->maxCodedExtent);
+    vn_encode_VkFormat(enc, &val->referencePictureFormat);
+    vn_encode_uint32_t(enc, &val->maxDpbSlots);
+    vn_encode_uint32_t(enc, &val->maxActiveReferencePictures);
+    if (vn_encode_simple_pointer(enc, val->pStdHeaderVersion))
+        vn_encode_VkExtensionProperties(enc, val->pStdHeaderVersion);
+}
+
+static inline void
+vn_encode_VkVideoSessionCreateInfoKHR(struct vn_cs_encoder *enc, const VkVideoSessionCreateInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_SESSION_CREATE_INFO_KHR });
+    vn_encode_VkVideoSessionCreateInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoSessionCreateInfoKHR_self(enc, val);
+}
+
+/* struct StdVideoH264HrdParameters */
+
+static inline size_t
+vn_sizeof_StdVideoH264HrdParameters(const StdVideoH264HrdParameters *val)
+{
+    size_t size = 0;
+    size += vn_sizeof_uint8_t(&val->cpb_cnt_minus1);
+    size += vn_sizeof_uint8_t(&val->bit_rate_scale);
+    size += vn_sizeof_uint8_t(&val->cpb_size_scale);
+    size += vn_sizeof_uint8_t(&val->reserved1);
+    size += vn_sizeof_array_size(32);
+    size += vn_sizeof_uint32_t_array(val->bit_rate_value_minus1, 32);
+    size += vn_sizeof_array_size(32);
+    size += vn_sizeof_uint32_t_array(val->cpb_size_value_minus1, 32);
+    size += vn_sizeof_array_size(32);
+    size += vn_sizeof_uint8_t_array(val->cbr_flag, 32);
+    size += vn_sizeof_uint32_t(&val->initial_cpb_removal_delay_length_minus1);
+    size += vn_sizeof_uint32_t(&val->cpb_removal_delay_length_minus1);
+    size += vn_sizeof_uint32_t(&val->dpb_output_delay_length_minus1);
+    size += vn_sizeof_uint32_t(&val->time_offset_length);
+    return size;
+}
+
+static inline void
+vn_encode_StdVideoH264HrdParameters(struct vn_cs_encoder *enc, const StdVideoH264HrdParameters *val)
+{
+    vn_encode_uint8_t(enc, &val->cpb_cnt_minus1);
+    vn_encode_uint8_t(enc, &val->bit_rate_scale);
+    vn_encode_uint8_t(enc, &val->cpb_size_scale);
+    vn_encode_uint8_t(enc, &val->reserved1);
+    vn_encode_array_size(enc, 32);
+    vn_encode_uint32_t_array(enc, val->bit_rate_value_minus1, 32);
+    vn_encode_array_size(enc, 32);
+    vn_encode_uint32_t_array(enc, val->cpb_size_value_minus1, 32);
+    vn_encode_array_size(enc, 32);
+    vn_encode_uint8_t_array(enc, val->cbr_flag, 32);
+    vn_encode_uint32_t(enc, &val->initial_cpb_removal_delay_length_minus1);
+    vn_encode_uint32_t(enc, &val->cpb_removal_delay_length_minus1);
+    vn_encode_uint32_t(enc, &val->dpb_output_delay_length_minus1);
+    vn_encode_uint32_t(enc, &val->time_offset_length);
+}
+
+/* struct StdVideoH264SequenceParameterSetVui */
+
+static inline size_t
+vn_sizeof_StdVideoH264SequenceParameterSetVui(const StdVideoH264SequenceParameterSetVui *val)
+{
+    size_t size = 0;
+    size += vn_sizeof_StdVideoH264SpsVuiFlags(&val->flags);
+    size += vn_sizeof_StdVideoH264AspectRatioIdc(&val->aspect_ratio_idc);
+    size += vn_sizeof_uint16_t(&val->sar_width);
+    size += vn_sizeof_uint16_t(&val->sar_height);
+    size += vn_sizeof_uint8_t(&val->video_format);
+    size += vn_sizeof_uint8_t(&val->colour_primaries);
+    size += vn_sizeof_uint8_t(&val->transfer_characteristics);
+    size += vn_sizeof_uint8_t(&val->matrix_coefficients);
+    size += vn_sizeof_uint32_t(&val->num_units_in_tick);
+    size += vn_sizeof_uint32_t(&val->time_scale);
+    size += vn_sizeof_uint8_t(&val->max_num_reorder_frames);
+    size += vn_sizeof_uint8_t(&val->max_dec_frame_buffering);
+    size += vn_sizeof_uint8_t(&val->chroma_sample_loc_type_top_field);
+    size += vn_sizeof_uint8_t(&val->chroma_sample_loc_type_bottom_field);
+    size += vn_sizeof_uint32_t(&val->reserved1);
+    size += vn_sizeof_simple_pointer(val->pHrdParameters);
+    if (val->pHrdParameters)
+        size += vn_sizeof_StdVideoH264HrdParameters(val->pHrdParameters);
+    return size;
+}
+
+static inline void
+vn_encode_StdVideoH264SequenceParameterSetVui(struct vn_cs_encoder *enc, const StdVideoH264SequenceParameterSetVui *val)
+{
+    vn_encode_StdVideoH264SpsVuiFlags(enc, &val->flags);
+    vn_encode_StdVideoH264AspectRatioIdc(enc, &val->aspect_ratio_idc);
+    vn_encode_uint16_t(enc, &val->sar_width);
+    vn_encode_uint16_t(enc, &val->sar_height);
+    vn_encode_uint8_t(enc, &val->video_format);
+    vn_encode_uint8_t(enc, &val->colour_primaries);
+    vn_encode_uint8_t(enc, &val->transfer_characteristics);
+    vn_encode_uint8_t(enc, &val->matrix_coefficients);
+    vn_encode_uint32_t(enc, &val->num_units_in_tick);
+    vn_encode_uint32_t(enc, &val->time_scale);
+    vn_encode_uint8_t(enc, &val->max_num_reorder_frames);
+    vn_encode_uint8_t(enc, &val->max_dec_frame_buffering);
+    vn_encode_uint8_t(enc, &val->chroma_sample_loc_type_top_field);
+    vn_encode_uint8_t(enc, &val->chroma_sample_loc_type_bottom_field);
+    vn_encode_uint32_t(enc, &val->reserved1);
+    if (vn_encode_simple_pointer(enc, val->pHrdParameters))
+        vn_encode_StdVideoH264HrdParameters(enc, val->pHrdParameters);
+}
+
+/* struct StdVideoH264SequenceParameterSet */
+
+static inline size_t
+vn_sizeof_StdVideoH264SequenceParameterSet(const StdVideoH264SequenceParameterSet *val)
+{
+    size_t size = 0;
+    size += vn_sizeof_StdVideoH264SpsFlags(&val->flags);
+    size += vn_sizeof_StdVideoH264ProfileIdc(&val->profile_idc);
+    size += vn_sizeof_StdVideoH264LevelIdc(&val->level_idc);
+    size += vn_sizeof_StdVideoH264ChromaFormatIdc(&val->chroma_format_idc);
+    size += vn_sizeof_uint8_t(&val->seq_parameter_set_id);
+    size += vn_sizeof_uint8_t(&val->bit_depth_luma_minus8);
+    size += vn_sizeof_uint8_t(&val->bit_depth_chroma_minus8);
+    size += vn_sizeof_uint8_t(&val->log2_max_frame_num_minus4);
+    size += vn_sizeof_StdVideoH264PocType(&val->pic_order_cnt_type);
+    size += vn_sizeof_int32_t(&val->offset_for_non_ref_pic);
+    size += vn_sizeof_int32_t(&val->offset_for_top_to_bottom_field);
+    size += vn_sizeof_uint8_t(&val->log2_max_pic_order_cnt_lsb_minus4);
+    size += vn_sizeof_uint8_t(&val->num_ref_frames_in_pic_order_cnt_cycle);
+    size += vn_sizeof_uint8_t(&val->max_num_ref_frames);
+    size += vn_sizeof_uint8_t(&val->reserved1);
+    size += vn_sizeof_uint32_t(&val->pic_width_in_mbs_minus1);
+    size += vn_sizeof_uint32_t(&val->pic_height_in_map_units_minus1);
+    size += vn_sizeof_uint32_t(&val->frame_crop_left_offset);
+    size += vn_sizeof_uint32_t(&val->frame_crop_right_offset);
+    size += vn_sizeof_uint32_t(&val->frame_crop_top_offset);
+    size += vn_sizeof_uint32_t(&val->frame_crop_bottom_offset);
+    size += vn_sizeof_uint32_t(&val->reserved2);
+    if (val->pOffsetForRefFrame) {
+        size += vn_sizeof_array_size(val->num_ref_frames_in_pic_order_cnt_cycle);
+        size += vn_sizeof_int32_t_array(val->pOffsetForRefFrame, val->num_ref_frames_in_pic_order_cnt_cycle);
+    } else {
+        size += vn_sizeof_array_size(0);
+    }
+    size += vn_sizeof_simple_pointer(val->pScalingLists);
+    if (val->pScalingLists)
+        size += vn_sizeof_StdVideoH264ScalingLists(val->pScalingLists);
+    size += vn_sizeof_simple_pointer(val->pSequenceParameterSetVui);
+    if (val->pSequenceParameterSetVui)
+        size += vn_sizeof_StdVideoH264SequenceParameterSetVui(val->pSequenceParameterSetVui);
+    return size;
+}
+
+static inline void
+vn_encode_StdVideoH264SequenceParameterSet(struct vn_cs_encoder *enc, const StdVideoH264SequenceParameterSet *val)
+{
+    vn_encode_StdVideoH264SpsFlags(enc, &val->flags);
+    vn_encode_StdVideoH264ProfileIdc(enc, &val->profile_idc);
+    vn_encode_StdVideoH264LevelIdc(enc, &val->level_idc);
+    vn_encode_StdVideoH264ChromaFormatIdc(enc, &val->chroma_format_idc);
+    vn_encode_uint8_t(enc, &val->seq_parameter_set_id);
+    vn_encode_uint8_t(enc, &val->bit_depth_luma_minus8);
+    vn_encode_uint8_t(enc, &val->bit_depth_chroma_minus8);
+    vn_encode_uint8_t(enc, &val->log2_max_frame_num_minus4);
+    vn_encode_StdVideoH264PocType(enc, &val->pic_order_cnt_type);
+    vn_encode_int32_t(enc, &val->offset_for_non_ref_pic);
+    vn_encode_int32_t(enc, &val->offset_for_top_to_bottom_field);
+    vn_encode_uint8_t(enc, &val->log2_max_pic_order_cnt_lsb_minus4);
+    vn_encode_uint8_t(enc, &val->num_ref_frames_in_pic_order_cnt_cycle);
+    vn_encode_uint8_t(enc, &val->max_num_ref_frames);
+    vn_encode_uint8_t(enc, &val->reserved1);
+    vn_encode_uint32_t(enc, &val->pic_width_in_mbs_minus1);
+    vn_encode_uint32_t(enc, &val->pic_height_in_map_units_minus1);
+    vn_encode_uint32_t(enc, &val->frame_crop_left_offset);
+    vn_encode_uint32_t(enc, &val->frame_crop_right_offset);
+    vn_encode_uint32_t(enc, &val->frame_crop_top_offset);
+    vn_encode_uint32_t(enc, &val->frame_crop_bottom_offset);
+    vn_encode_uint32_t(enc, &val->reserved2);
+    if (val->pOffsetForRefFrame) {
+        vn_encode_array_size(enc, val->num_ref_frames_in_pic_order_cnt_cycle);
+        vn_encode_int32_t_array(enc, val->pOffsetForRefFrame, val->num_ref_frames_in_pic_order_cnt_cycle);
+    } else {
+        vn_encode_array_size(enc, 0);
+    }
+    if (vn_encode_simple_pointer(enc, val->pScalingLists))
+        vn_encode_StdVideoH264ScalingLists(enc, val->pScalingLists);
+    if (vn_encode_simple_pointer(enc, val->pSequenceParameterSetVui))
+        vn_encode_StdVideoH264SequenceParameterSetVui(enc, val->pSequenceParameterSetVui);
+}
+
+/* struct StdVideoH264PictureParameterSet */
+
+static inline size_t
+vn_sizeof_StdVideoH264PictureParameterSet(const StdVideoH264PictureParameterSet *val)
+{
+    size_t size = 0;
+    size += vn_sizeof_StdVideoH264PpsFlags(&val->flags);
+    size += vn_sizeof_uint8_t(&val->seq_parameter_set_id);
+    size += vn_sizeof_uint8_t(&val->pic_parameter_set_id);
+    size += vn_sizeof_uint8_t(&val->num_ref_idx_l0_default_active_minus1);
+    size += vn_sizeof_uint8_t(&val->num_ref_idx_l1_default_active_minus1);
+    size += vn_sizeof_StdVideoH264WeightedBipredIdc(&val->weighted_bipred_idc);
+    size += vn_sizeof_int8_t(&val->pic_init_qp_minus26);
+    size += vn_sizeof_int8_t(&val->pic_init_qs_minus26);
+    size += vn_sizeof_int8_t(&val->chroma_qp_index_offset);
+    size += vn_sizeof_int8_t(&val->second_chroma_qp_index_offset);
+    size += vn_sizeof_simple_pointer(val->pScalingLists);
+    if (val->pScalingLists)
+        size += vn_sizeof_StdVideoH264ScalingLists(val->pScalingLists);
+    return size;
+}
+
+static inline void
+vn_encode_StdVideoH264PictureParameterSet(struct vn_cs_encoder *enc, const StdVideoH264PictureParameterSet *val)
+{
+    vn_encode_StdVideoH264PpsFlags(enc, &val->flags);
+    vn_encode_uint8_t(enc, &val->seq_parameter_set_id);
+    vn_encode_uint8_t(enc, &val->pic_parameter_set_id);
+    vn_encode_uint8_t(enc, &val->num_ref_idx_l0_default_active_minus1);
+    vn_encode_uint8_t(enc, &val->num_ref_idx_l1_default_active_minus1);
+    vn_encode_StdVideoH264WeightedBipredIdc(enc, &val->weighted_bipred_idc);
+    vn_encode_int8_t(enc, &val->pic_init_qp_minus26);
+    vn_encode_int8_t(enc, &val->pic_init_qs_minus26);
+    vn_encode_int8_t(enc, &val->chroma_qp_index_offset);
+    vn_encode_int8_t(enc, &val->second_chroma_qp_index_offset);
+    if (vn_encode_simple_pointer(enc, val->pScalingLists))
+        vn_encode_StdVideoH264ScalingLists(enc, val->pScalingLists);
+}
+
+/* struct VkVideoDecodeH264SessionParametersAddInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR_self(const VkVideoDecodeH264SessionParametersAddInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->stdSPSCount);
+    if (val->pStdSPSs) {
+        size += vn_sizeof_array_size(val->stdSPSCount);
+        for (uint32_t i = 0; i < val->stdSPSCount; i++)
+            size += vn_sizeof_StdVideoH264SequenceParameterSet(&val->pStdSPSs[i]);
+    } else {
+        size += vn_sizeof_array_size(0);
+    }
+    size += vn_sizeof_uint32_t(&val->stdPPSCount);
+    if (val->pStdPPSs) {
+        size += vn_sizeof_array_size(val->stdPPSCount);
+        for (uint32_t i = 0; i < val->stdPPSCount; i++)
+            size += vn_sizeof_StdVideoH264PictureParameterSet(&val->pStdPPSs[i]);
+    } else {
+        size += vn_sizeof_array_size(0);
+    }
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR(const VkVideoDecodeH264SessionParametersAddInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoDecodeH264SessionParametersAddInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_uint32_t(enc, &val->stdSPSCount);
+    if (val->pStdSPSs) {
+        vn_encode_array_size(enc, val->stdSPSCount);
+        for (uint32_t i = 0; i < val->stdSPSCount; i++)
+            vn_encode_StdVideoH264SequenceParameterSet(enc, &val->pStdSPSs[i]);
+    } else {
+        vn_encode_array_size(enc, 0);
+    }
+    vn_encode_uint32_t(enc, &val->stdPPSCount);
+    if (val->pStdPPSs) {
+        vn_encode_array_size(enc, val->stdPPSCount);
+        for (uint32_t i = 0; i < val->stdPPSCount; i++)
+            vn_encode_StdVideoH264PictureParameterSet(enc, &val->pStdPPSs[i]);
+    } else {
+        vn_encode_array_size(enc, 0);
+    }
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR(struct vn_cs_encoder *enc, const VkVideoDecodeH264SessionParametersAddInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR });
+    vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR_self(enc, val);
+}
+
+/* struct VkVideoDecodeH264SessionParametersCreateInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264SessionParametersCreateInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264SessionParametersCreateInfoKHR_self(const VkVideoDecodeH264SessionParametersCreateInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->maxStdSPSCount);
+    size += vn_sizeof_uint32_t(&val->maxStdPPSCount);
+    size += vn_sizeof_simple_pointer(val->pParametersAddInfo);
+    if (val->pParametersAddInfo)
+        size += vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR(val->pParametersAddInfo);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264SessionParametersCreateInfoKHR(const VkVideoDecodeH264SessionParametersCreateInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoDecodeH264SessionParametersCreateInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoDecodeH264SessionParametersCreateInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264SessionParametersCreateInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264SessionParametersCreateInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoDecodeH264SessionParametersCreateInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_uint32_t(enc, &val->maxStdSPSCount);
+    vn_encode_uint32_t(enc, &val->maxStdPPSCount);
+    if (vn_encode_simple_pointer(enc, val->pParametersAddInfo))
+        vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR(enc, val->pParametersAddInfo);
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264SessionParametersCreateInfoKHR(struct vn_cs_encoder *enc, const VkVideoDecodeH264SessionParametersCreateInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR });
+    vn_encode_VkVideoDecodeH264SessionParametersCreateInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoDecodeH264SessionParametersCreateInfoKHR_self(enc, val);
+}
+
+/* struct VkVideoSessionParametersCreateInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersCreateInfoKHR_pnext(const void *val)
+{
+    const VkBaseInStructure *pnext = val;
+    size_t size = 0;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkVideoSessionParametersCreateInfoKHR_pnext(((const VkVideoDecodeH264SessionParametersCreateInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoDecodeH264SessionParametersCreateInfoKHR_self((const VkVideoDecodeH264SessionParametersCreateInfoKHR *)pnext);
+            return size;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersCreateInfoKHR_self(const VkVideoSessionParametersCreateInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_VkFlags(&val->flags);
+    size += vn_sizeof_VkVideoSessionParametersKHR(&val->videoSessionParametersTemplate);
+    size += vn_sizeof_VkVideoSessionKHR(&val->videoSession);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersCreateInfoKHR(const VkVideoSessionParametersCreateInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoSessionParametersCreateInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoSessionParametersCreateInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersCreateInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    const VkBaseInStructure *pnext = val;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_CREATE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkVideoSessionParametersCreateInfoKHR_pnext(enc, ((const VkVideoDecodeH264SessionParametersCreateInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoDecodeH264SessionParametersCreateInfoKHR_self(enc, (const VkVideoDecodeH264SessionParametersCreateInfoKHR *)pnext);
+            return;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersCreateInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoSessionParametersCreateInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_VkFlags(enc, &val->flags);
+    vn_encode_VkVideoSessionParametersKHR(enc, &val->videoSessionParametersTemplate);
+    vn_encode_VkVideoSessionKHR(enc, &val->videoSession);
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersCreateInfoKHR(struct vn_cs_encoder *enc, const VkVideoSessionParametersCreateInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_CREATE_INFO_KHR });
+    vn_encode_VkVideoSessionParametersCreateInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoSessionParametersCreateInfoKHR_self(enc, val);
+}
+
+/* struct VkVideoSessionParametersUpdateInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersUpdateInfoKHR_pnext(const void *val)
+{
+    const VkBaseInStructure *pnext = val;
+    size_t size = 0;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkVideoSessionParametersUpdateInfoKHR_pnext(((const VkVideoDecodeH264SessionParametersAddInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoDecodeH264SessionParametersAddInfoKHR_self((const VkVideoDecodeH264SessionParametersAddInfoKHR *)pnext);
+            return size;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersUpdateInfoKHR_self(const VkVideoSessionParametersUpdateInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->updateSequenceCount);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersUpdateInfoKHR(const VkVideoSessionParametersUpdateInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoSessionParametersUpdateInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoSessionParametersUpdateInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersUpdateInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    const VkBaseInStructure *pnext = val;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_SESSION_PARAMETERS_ADD_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkVideoSessionParametersUpdateInfoKHR_pnext(enc, ((const VkVideoDecodeH264SessionParametersAddInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoDecodeH264SessionParametersAddInfoKHR_self(enc, (const VkVideoDecodeH264SessionParametersAddInfoKHR *)pnext);
+            return;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersUpdateInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoSessionParametersUpdateInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_uint32_t(enc, &val->updateSequenceCount);
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersUpdateInfoKHR(struct vn_cs_encoder *enc, const VkVideoSessionParametersUpdateInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_UPDATE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_SESSION_PARAMETERS_UPDATE_INFO_KHR });
+    vn_encode_VkVideoSessionParametersUpdateInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoSessionParametersUpdateInfoKHR_self(enc, val);
+}
+
+/* struct VkVideoSessionMemoryRequirementsKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoSessionMemoryRequirementsKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionMemoryRequirementsKHR_self(const VkVideoSessionMemoryRequirementsKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->memoryBindIndex);
+    size += vn_sizeof_VkMemoryRequirements(&val->memoryRequirements);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionMemoryRequirementsKHR(const VkVideoSessionMemoryRequirementsKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoSessionMemoryRequirementsKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoSessionMemoryRequirementsKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_decode_VkVideoSessionMemoryRequirementsKHR_pnext(struct vn_cs_decoder *dec, const void *val)
+{
+    /* no known/supported struct */
+    if (vn_decode_simple_pointer(dec))
+        assert(false);
+}
+
+static inline void
+vn_decode_VkVideoSessionMemoryRequirementsKHR_self(struct vn_cs_decoder *dec, VkVideoSessionMemoryRequirementsKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_decode_uint32_t(dec, &val->memoryBindIndex);
+    vn_decode_VkMemoryRequirements(dec, &val->memoryRequirements);
+}
+
+static inline void
+vn_decode_VkVideoSessionMemoryRequirementsKHR(struct vn_cs_decoder *dec, VkVideoSessionMemoryRequirementsKHR *val)
+{
+    VkStructureType stype;
+    vn_decode_VkStructureType(dec, &stype);
+    assert(stype == VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR);
+
+    assert(val->sType == stype);
+    vn_decode_VkVideoSessionMemoryRequirementsKHR_pnext(dec, val->pNext);
+    vn_decode_VkVideoSessionMemoryRequirementsKHR_self(dec, val);
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionMemoryRequirementsKHR_pnext_partial(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionMemoryRequirementsKHR_self_partial(const VkVideoSessionMemoryRequirementsKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    /* skip val->memoryBindIndex */
+    size += vn_sizeof_VkMemoryRequirements_partial(&val->memoryRequirements);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoSessionMemoryRequirementsKHR_partial(const VkVideoSessionMemoryRequirementsKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoSessionMemoryRequirementsKHR_pnext_partial(val->pNext);
+    size += vn_sizeof_VkVideoSessionMemoryRequirementsKHR_self_partial(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoSessionMemoryRequirementsKHR_pnext_partial(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoSessionMemoryRequirementsKHR_self_partial(struct vn_cs_encoder *enc, const VkVideoSessionMemoryRequirementsKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    /* skip val->memoryBindIndex */
+    vn_encode_VkMemoryRequirements_partial(enc, &val->memoryRequirements);
+}
+
+static inline void
+vn_encode_VkVideoSessionMemoryRequirementsKHR_partial(struct vn_cs_encoder *enc, const VkVideoSessionMemoryRequirementsKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_SESSION_MEMORY_REQUIREMENTS_KHR });
+    vn_encode_VkVideoSessionMemoryRequirementsKHR_pnext_partial(enc, val->pNext);
+    vn_encode_VkVideoSessionMemoryRequirementsKHR_self_partial(enc, val);
+}
+
+/* struct VkBindVideoSessionMemoryInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkBindVideoSessionMemoryInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkBindVideoSessionMemoryInfoKHR_self(const VkBindVideoSessionMemoryInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->memoryBindIndex);
+    size += vn_sizeof_VkDeviceMemory(&val->memory);
+    size += vn_sizeof_VkDeviceSize(&val->memoryOffset);
+    size += vn_sizeof_VkDeviceSize(&val->memorySize);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkBindVideoSessionMemoryInfoKHR(const VkBindVideoSessionMemoryInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkBindVideoSessionMemoryInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkBindVideoSessionMemoryInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkBindVideoSessionMemoryInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkBindVideoSessionMemoryInfoKHR_self(struct vn_cs_encoder *enc, const VkBindVideoSessionMemoryInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_uint32_t(enc, &val->memoryBindIndex);
+    vn_encode_VkDeviceMemory(enc, &val->memory);
+    vn_encode_VkDeviceSize(enc, &val->memoryOffset);
+    vn_encode_VkDeviceSize(enc, &val->memorySize);
+}
+
+static inline void
+vn_encode_VkBindVideoSessionMemoryInfoKHR(struct vn_cs_encoder *enc, const VkBindVideoSessionMemoryInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_BIND_VIDEO_SESSION_MEMORY_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_BIND_VIDEO_SESSION_MEMORY_INFO_KHR });
+    vn_encode_VkBindVideoSessionMemoryInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkBindVideoSessionMemoryInfoKHR_self(enc, val);
+}
+
 /* struct VkCommandStreamDescriptionMESA */
 
 static inline size_t
@@ -538,6 +1321,473 @@ static inline VkResult vn_decode_vkDeferredOperationJoinKHR_reply(struct vn_cs_d
     vn_decode_VkResult(dec, &ret);
     /* skip device */
     /* skip operation */
+
+    return ret;
+}
+
+static inline size_t vn_sizeof_vkCreateVideoSessionKHR(VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkCreateVideoSessionKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_simple_pointer(pCreateInfo);
+    if (pCreateInfo)
+        cmd_size += vn_sizeof_VkVideoSessionCreateInfoKHR(pCreateInfo);
+    cmd_size += vn_sizeof_simple_pointer(pAllocator);
+    if (pAllocator)
+        assert(false);
+    cmd_size += vn_sizeof_simple_pointer(pVideoSession);
+    if (pVideoSession)
+        cmd_size += vn_sizeof_VkVideoSessionKHR(pVideoSession);
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkCreateVideoSessionKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkCreateVideoSessionKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    if (vn_encode_simple_pointer(enc, pCreateInfo))
+        vn_encode_VkVideoSessionCreateInfoKHR(enc, pCreateInfo);
+    if (vn_encode_simple_pointer(enc, pAllocator))
+        assert(false);
+    if (vn_encode_simple_pointer(enc, pVideoSession))
+        vn_encode_VkVideoSessionKHR(enc, pVideoSession);
+}
+
+static inline size_t vn_sizeof_vkCreateVideoSessionKHR_reply(VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkCreateVideoSessionKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    VkResult ret;
+    cmd_size += vn_sizeof_VkResult(&ret);
+    /* skip device */
+    /* skip pCreateInfo */
+    /* skip pAllocator */
+    cmd_size += vn_sizeof_simple_pointer(pVideoSession);
+    if (pVideoSession)
+        cmd_size += vn_sizeof_VkVideoSessionKHR(pVideoSession);
+
+    return cmd_size;
+}
+
+static inline VkResult vn_decode_vkCreateVideoSessionKHR_reply(struct vn_cs_decoder *dec, VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkCreateVideoSessionKHR_EXT);
+
+    VkResult ret;
+    vn_decode_VkResult(dec, &ret);
+    /* skip device */
+    /* skip pCreateInfo */
+    /* skip pAllocator */
+    if (vn_decode_simple_pointer(dec)) {
+        vn_decode_VkVideoSessionKHR(dec, pVideoSession);
+    } else {
+        pVideoSession = NULL;
+    }
+
+    return ret;
+}
+
+static inline size_t vn_sizeof_vkDestroyVideoSessionKHR(VkDevice device, VkVideoSessionKHR videoSession, const VkAllocationCallbacks* pAllocator)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkDestroyVideoSessionKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_VkVideoSessionKHR(&videoSession);
+    cmd_size += vn_sizeof_simple_pointer(pAllocator);
+    if (pAllocator)
+        assert(false);
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkDestroyVideoSessionKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionKHR videoSession, const VkAllocationCallbacks* pAllocator)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkDestroyVideoSessionKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    vn_encode_VkVideoSessionKHR(enc, &videoSession);
+    if (vn_encode_simple_pointer(enc, pAllocator))
+        assert(false);
+}
+
+static inline size_t vn_sizeof_vkDestroyVideoSessionKHR_reply(VkDevice device, VkVideoSessionKHR videoSession, const VkAllocationCallbacks* pAllocator)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkDestroyVideoSessionKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    /* skip device */
+    /* skip videoSession */
+    /* skip pAllocator */
+
+    return cmd_size;
+}
+
+static inline void vn_decode_vkDestroyVideoSessionKHR_reply(struct vn_cs_decoder *dec, VkDevice device, VkVideoSessionKHR videoSession, const VkAllocationCallbacks* pAllocator)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkDestroyVideoSessionKHR_EXT);
+
+    /* skip device */
+    /* skip videoSession */
+    /* skip pAllocator */
+}
+
+static inline size_t vn_sizeof_vkCreateVideoSessionParametersKHR(VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkCreateVideoSessionParametersKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_simple_pointer(pCreateInfo);
+    if (pCreateInfo)
+        cmd_size += vn_sizeof_VkVideoSessionParametersCreateInfoKHR(pCreateInfo);
+    cmd_size += vn_sizeof_simple_pointer(pAllocator);
+    if (pAllocator)
+        assert(false);
+    cmd_size += vn_sizeof_simple_pointer(pVideoSessionParameters);
+    if (pVideoSessionParameters)
+        cmd_size += vn_sizeof_VkVideoSessionParametersKHR(pVideoSessionParameters);
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkCreateVideoSessionParametersKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkCreateVideoSessionParametersKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    if (vn_encode_simple_pointer(enc, pCreateInfo))
+        vn_encode_VkVideoSessionParametersCreateInfoKHR(enc, pCreateInfo);
+    if (vn_encode_simple_pointer(enc, pAllocator))
+        assert(false);
+    if (vn_encode_simple_pointer(enc, pVideoSessionParameters))
+        vn_encode_VkVideoSessionParametersKHR(enc, pVideoSessionParameters);
+}
+
+static inline size_t vn_sizeof_vkCreateVideoSessionParametersKHR_reply(VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkCreateVideoSessionParametersKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    VkResult ret;
+    cmd_size += vn_sizeof_VkResult(&ret);
+    /* skip device */
+    /* skip pCreateInfo */
+    /* skip pAllocator */
+    cmd_size += vn_sizeof_simple_pointer(pVideoSessionParameters);
+    if (pVideoSessionParameters)
+        cmd_size += vn_sizeof_VkVideoSessionParametersKHR(pVideoSessionParameters);
+
+    return cmd_size;
+}
+
+static inline VkResult vn_decode_vkCreateVideoSessionParametersKHR_reply(struct vn_cs_decoder *dec, VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkCreateVideoSessionParametersKHR_EXT);
+
+    VkResult ret;
+    vn_decode_VkResult(dec, &ret);
+    /* skip device */
+    /* skip pCreateInfo */
+    /* skip pAllocator */
+    if (vn_decode_simple_pointer(dec)) {
+        vn_decode_VkVideoSessionParametersKHR(dec, pVideoSessionParameters);
+    } else {
+        pVideoSessionParameters = NULL;
+    }
+
+    return ret;
+}
+
+static inline size_t vn_sizeof_vkUpdateVideoSessionParametersKHR(VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkUpdateVideoSessionParametersKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_VkVideoSessionParametersKHR(&videoSessionParameters);
+    cmd_size += vn_sizeof_simple_pointer(pUpdateInfo);
+    if (pUpdateInfo)
+        cmd_size += vn_sizeof_VkVideoSessionParametersUpdateInfoKHR(pUpdateInfo);
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkUpdateVideoSessionParametersKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkUpdateVideoSessionParametersKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    vn_encode_VkVideoSessionParametersKHR(enc, &videoSessionParameters);
+    if (vn_encode_simple_pointer(enc, pUpdateInfo))
+        vn_encode_VkVideoSessionParametersUpdateInfoKHR(enc, pUpdateInfo);
+}
+
+static inline size_t vn_sizeof_vkUpdateVideoSessionParametersKHR_reply(VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkUpdateVideoSessionParametersKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    VkResult ret;
+    cmd_size += vn_sizeof_VkResult(&ret);
+    /* skip device */
+    /* skip videoSessionParameters */
+    /* skip pUpdateInfo */
+
+    return cmd_size;
+}
+
+static inline VkResult vn_decode_vkUpdateVideoSessionParametersKHR_reply(struct vn_cs_decoder *dec, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkUpdateVideoSessionParametersKHR_EXT);
+
+    VkResult ret;
+    vn_decode_VkResult(dec, &ret);
+    /* skip device */
+    /* skip videoSessionParameters */
+    /* skip pUpdateInfo */
+
+    return ret;
+}
+
+static inline size_t vn_sizeof_vkDestroyVideoSessionParametersKHR(VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkAllocationCallbacks* pAllocator)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkDestroyVideoSessionParametersKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_VkVideoSessionParametersKHR(&videoSessionParameters);
+    cmd_size += vn_sizeof_simple_pointer(pAllocator);
+    if (pAllocator)
+        assert(false);
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkDestroyVideoSessionParametersKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkAllocationCallbacks* pAllocator)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkDestroyVideoSessionParametersKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    vn_encode_VkVideoSessionParametersKHR(enc, &videoSessionParameters);
+    if (vn_encode_simple_pointer(enc, pAllocator))
+        assert(false);
+}
+
+static inline size_t vn_sizeof_vkDestroyVideoSessionParametersKHR_reply(VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkAllocationCallbacks* pAllocator)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkDestroyVideoSessionParametersKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    /* skip device */
+    /* skip videoSessionParameters */
+    /* skip pAllocator */
+
+    return cmd_size;
+}
+
+static inline void vn_decode_vkDestroyVideoSessionParametersKHR_reply(struct vn_cs_decoder *dec, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkAllocationCallbacks* pAllocator)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkDestroyVideoSessionParametersKHR_EXT);
+
+    /* skip device */
+    /* skip videoSessionParameters */
+    /* skip pAllocator */
+}
+
+static inline size_t vn_sizeof_vkGetVideoSessionMemoryRequirementsKHR(VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkGetVideoSessionMemoryRequirementsKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_VkVideoSessionKHR(&videoSession);
+    cmd_size += vn_sizeof_simple_pointer(pMemoryRequirementsCount);
+    if (pMemoryRequirementsCount)
+        cmd_size += vn_sizeof_uint32_t(pMemoryRequirementsCount);
+    if (pMemoryRequirements) {
+        cmd_size += vn_sizeof_array_size((pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0));
+        for (uint32_t i = 0; i < (pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0); i++)
+            cmd_size += vn_sizeof_VkVideoSessionMemoryRequirementsKHR_partial(&pMemoryRequirements[i]);
+    } else {
+        cmd_size += vn_sizeof_array_size(0);
+    }
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkGetVideoSessionMemoryRequirementsKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkGetVideoSessionMemoryRequirementsKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    vn_encode_VkVideoSessionKHR(enc, &videoSession);
+    if (vn_encode_simple_pointer(enc, pMemoryRequirementsCount))
+        vn_encode_uint32_t(enc, pMemoryRequirementsCount);
+    if (pMemoryRequirements) {
+        vn_encode_array_size(enc, (pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0));
+        for (uint32_t i = 0; i < (pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0); i++)
+            vn_encode_VkVideoSessionMemoryRequirementsKHR_partial(enc, &pMemoryRequirements[i]);
+    } else {
+        vn_encode_array_size(enc, 0);
+    }
+}
+
+static inline size_t vn_sizeof_vkGetVideoSessionMemoryRequirementsKHR_reply(VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkGetVideoSessionMemoryRequirementsKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    VkResult ret;
+    cmd_size += vn_sizeof_VkResult(&ret);
+    /* skip device */
+    /* skip videoSession */
+    cmd_size += vn_sizeof_simple_pointer(pMemoryRequirementsCount);
+    if (pMemoryRequirementsCount)
+        cmd_size += vn_sizeof_uint32_t(pMemoryRequirementsCount);
+    if (pMemoryRequirements) {
+        cmd_size += vn_sizeof_array_size((pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0));
+        for (uint32_t i = 0; i < (pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0); i++)
+            cmd_size += vn_sizeof_VkVideoSessionMemoryRequirementsKHR(&pMemoryRequirements[i]);
+    } else {
+        cmd_size += vn_sizeof_array_size(0);
+    }
+
+    return cmd_size;
+}
+
+static inline VkResult vn_decode_vkGetVideoSessionMemoryRequirementsKHR_reply(struct vn_cs_decoder *dec, VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkGetVideoSessionMemoryRequirementsKHR_EXT);
+
+    VkResult ret;
+    vn_decode_VkResult(dec, &ret);
+    /* skip device */
+    /* skip videoSession */
+    if (vn_decode_simple_pointer(dec)) {
+        vn_decode_uint32_t(dec, pMemoryRequirementsCount);
+    } else {
+        pMemoryRequirementsCount = NULL;
+    }
+    if (vn_peek_array_size(dec)) {
+        const uint32_t iter_count = vn_decode_array_size(dec, (pMemoryRequirementsCount ? *pMemoryRequirementsCount : 0));
+        for (uint32_t i = 0; i < iter_count; i++)
+            vn_decode_VkVideoSessionMemoryRequirementsKHR(dec, &pMemoryRequirements[i]);
+    } else {
+        vn_decode_array_size_unchecked(dec);
+        pMemoryRequirements = NULL;
+    }
+
+    return ret;
+}
+
+static inline size_t vn_sizeof_vkBindVideoSessionMemoryKHR(VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkBindVideoSessionMemoryKHR_EXT;
+    const VkFlags cmd_flags = 0;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type) + vn_sizeof_VkFlags(&cmd_flags);
+
+    cmd_size += vn_sizeof_VkDevice(&device);
+    cmd_size += vn_sizeof_VkVideoSessionKHR(&videoSession);
+    cmd_size += vn_sizeof_uint32_t(&bindSessionMemoryInfoCount);
+    if (pBindSessionMemoryInfos) {
+        cmd_size += vn_sizeof_array_size(bindSessionMemoryInfoCount);
+        for (uint32_t i = 0; i < bindSessionMemoryInfoCount; i++)
+            cmd_size += vn_sizeof_VkBindVideoSessionMemoryInfoKHR(&pBindSessionMemoryInfos[i]);
+    } else {
+        cmd_size += vn_sizeof_array_size(0);
+    }
+
+    return cmd_size;
+}
+
+static inline void vn_encode_vkBindVideoSessionMemoryKHR(struct vn_cs_encoder *enc, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkBindVideoSessionMemoryKHR_EXT;
+
+    vn_encode_VkCommandTypeEXT(enc, &cmd_type);
+    vn_encode_VkFlags(enc, &cmd_flags);
+
+    vn_encode_VkDevice(enc, &device);
+    vn_encode_VkVideoSessionKHR(enc, &videoSession);
+    vn_encode_uint32_t(enc, &bindSessionMemoryInfoCount);
+    if (pBindSessionMemoryInfos) {
+        vn_encode_array_size(enc, bindSessionMemoryInfoCount);
+        for (uint32_t i = 0; i < bindSessionMemoryInfoCount; i++)
+            vn_encode_VkBindVideoSessionMemoryInfoKHR(enc, &pBindSessionMemoryInfos[i]);
+    } else {
+        vn_encode_array_size(enc, 0);
+    }
+}
+
+static inline size_t vn_sizeof_vkBindVideoSessionMemoryKHR_reply(VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos)
+{
+    const VkCommandTypeEXT cmd_type = VK_COMMAND_TYPE_vkBindVideoSessionMemoryKHR_EXT;
+    size_t cmd_size = vn_sizeof_VkCommandTypeEXT(&cmd_type);
+
+    VkResult ret;
+    cmd_size += vn_sizeof_VkResult(&ret);
+    /* skip device */
+    /* skip videoSession */
+    /* skip bindSessionMemoryInfoCount */
+    /* skip pBindSessionMemoryInfos */
+
+    return cmd_size;
+}
+
+static inline VkResult vn_decode_vkBindVideoSessionMemoryKHR_reply(struct vn_cs_decoder *dec, VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos)
+{
+    VkCommandTypeEXT command_type;
+    vn_decode_VkCommandTypeEXT(dec, &command_type);
+    assert(command_type == VK_COMMAND_TYPE_vkBindVideoSessionMemoryKHR_EXT);
+
+    VkResult ret;
+    vn_decode_VkResult(dec, &ret);
+    /* skip device */
+    /* skip videoSession */
+    /* skip bindSessionMemoryInfoCount */
+    /* skip pBindSessionMemoryInfos */
 
     return ret;
 }
@@ -1135,6 +2385,153 @@ static inline void vn_submit_vkDeferredOperationJoinKHR(struct vn_ring *vn_ring,
     }
 }
 
+static inline void vn_submit_vkCreateVideoSessionKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkCreateVideoSessionKHR(device, pCreateInfo, pAllocator, pVideoSession);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkCreateVideoSessionKHR_reply(device, pCreateInfo, pAllocator, pVideoSession) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkCreateVideoSessionKHR(enc, cmd_flags, device, pCreateInfo, pAllocator, pVideoSession);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
+static inline void vn_submit_vkDestroyVideoSessionKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionKHR videoSession, const VkAllocationCallbacks* pAllocator, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkDestroyVideoSessionKHR(device, videoSession, pAllocator);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkDestroyVideoSessionKHR_reply(device, videoSession, pAllocator) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkDestroyVideoSessionKHR(enc, cmd_flags, device, videoSession, pAllocator);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
+static inline void vn_submit_vkCreateVideoSessionParametersKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkCreateVideoSessionParametersKHR(device, pCreateInfo, pAllocator, pVideoSessionParameters);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkCreateVideoSessionParametersKHR_reply(device, pCreateInfo, pAllocator, pVideoSessionParameters) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkCreateVideoSessionParametersKHR(enc, cmd_flags, device, pCreateInfo, pAllocator, pVideoSessionParameters);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
+static inline void vn_submit_vkUpdateVideoSessionParametersKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkUpdateVideoSessionParametersKHR(device, videoSessionParameters, pUpdateInfo);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkUpdateVideoSessionParametersKHR_reply(device, videoSessionParameters, pUpdateInfo) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkUpdateVideoSessionParametersKHR(enc, cmd_flags, device, videoSessionParameters, pUpdateInfo);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
+static inline void vn_submit_vkDestroyVideoSessionParametersKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkAllocationCallbacks* pAllocator, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkDestroyVideoSessionParametersKHR(device, videoSessionParameters, pAllocator);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkDestroyVideoSessionParametersKHR_reply(device, videoSessionParameters, pAllocator) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkDestroyVideoSessionParametersKHR(enc, cmd_flags, device, videoSessionParameters, pAllocator);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
+static inline void vn_submit_vkGetVideoSessionMemoryRequirementsKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkGetVideoSessionMemoryRequirementsKHR(device, videoSession, pMemoryRequirementsCount, pMemoryRequirements);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkGetVideoSessionMemoryRequirementsKHR_reply(device, videoSession, pMemoryRequirementsCount, pMemoryRequirements) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkGetVideoSessionMemoryRequirementsKHR(enc, cmd_flags, device, videoSession, pMemoryRequirementsCount, pMemoryRequirements);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
+static inline void vn_submit_vkBindVideoSessionMemoryKHR(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos, struct vn_ring_submit_command *submit)
+{
+    uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
+    void *cmd_data = local_cmd_data;
+    size_t cmd_size = vn_sizeof_vkBindVideoSessionMemoryKHR(device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos);
+    if (cmd_size > sizeof(local_cmd_data)) {
+        cmd_data = malloc(cmd_size);
+        if (!cmd_data)
+            cmd_size = 0;
+    }
+    const size_t reply_size = cmd_flags & VK_COMMAND_GENERATE_REPLY_BIT_EXT ? vn_sizeof_vkBindVideoSessionMemoryKHR_reply(device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos) : 0;
+
+    struct vn_cs_encoder *enc = vn_ring_submit_command_init(vn_ring, submit, cmd_data, cmd_size, reply_size);
+    if (cmd_size) {
+        vn_encode_vkBindVideoSessionMemoryKHR(enc, cmd_flags, device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos);
+        vn_ring_submit_command(vn_ring, submit);
+        if (cmd_data != local_cmd_data)
+            free(cmd_data);
+    }
+}
+
 static inline void vn_submit_vkSetReplyCommandStreamMESA(struct vn_ring *vn_ring, VkCommandFlagsEXT cmd_flags, const VkCommandStreamDescriptionMESA* pStream, struct vn_ring_submit_command *submit)
 {
     uint8_t local_cmd_data[VN_SUBMIT_LOCAL_CMD_SIZE];
@@ -1437,6 +2834,128 @@ static inline void vn_async_vkDeferredOperationJoinKHR(struct vn_ring *vn_ring, 
 {
     struct vn_ring_submit_command submit;
     vn_submit_vkDeferredOperationJoinKHR(vn_ring, 0, device, operation, &submit);
+}
+
+static inline VkResult vn_call_vkCreateVideoSessionKHR(struct vn_ring *vn_ring, VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession)
+{
+    VN_TRACE_FUNC();
+
+    struct vn_ring_submit_command submit;
+    vn_submit_vkCreateVideoSessionKHR(vn_ring, VK_COMMAND_GENERATE_REPLY_BIT_EXT, device, pCreateInfo, pAllocator, pVideoSession, &submit);
+    struct vn_cs_decoder *dec = vn_ring_get_command_reply(vn_ring, &submit);
+    if (dec) {
+        const VkResult ret = vn_decode_vkCreateVideoSessionKHR_reply(dec, device, pCreateInfo, pAllocator, pVideoSession);
+        vn_ring_free_command_reply(vn_ring, &submit);
+        return ret;
+    } else {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+}
+
+static inline void vn_async_vkCreateVideoSessionKHR(struct vn_ring *vn_ring, VkDevice device, const VkVideoSessionCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionKHR* pVideoSession)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkCreateVideoSessionKHR(vn_ring, 0, device, pCreateInfo, pAllocator, pVideoSession, &submit);
+}
+
+static inline void vn_async_vkDestroyVideoSessionKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionKHR videoSession, const VkAllocationCallbacks* pAllocator)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkDestroyVideoSessionKHR(vn_ring, 0, device, videoSession, pAllocator, &submit);
+}
+
+static inline VkResult vn_call_vkCreateVideoSessionParametersKHR(struct vn_ring *vn_ring, VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters)
+{
+    VN_TRACE_FUNC();
+
+    struct vn_ring_submit_command submit;
+    vn_submit_vkCreateVideoSessionParametersKHR(vn_ring, VK_COMMAND_GENERATE_REPLY_BIT_EXT, device, pCreateInfo, pAllocator, pVideoSessionParameters, &submit);
+    struct vn_cs_decoder *dec = vn_ring_get_command_reply(vn_ring, &submit);
+    if (dec) {
+        const VkResult ret = vn_decode_vkCreateVideoSessionParametersKHR_reply(dec, device, pCreateInfo, pAllocator, pVideoSessionParameters);
+        vn_ring_free_command_reply(vn_ring, &submit);
+        return ret;
+    } else {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+}
+
+static inline void vn_async_vkCreateVideoSessionParametersKHR(struct vn_ring *vn_ring, VkDevice device, const VkVideoSessionParametersCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkVideoSessionParametersKHR* pVideoSessionParameters)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkCreateVideoSessionParametersKHR(vn_ring, 0, device, pCreateInfo, pAllocator, pVideoSessionParameters, &submit);
+}
+
+static inline VkResult vn_call_vkUpdateVideoSessionParametersKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
+{
+    VN_TRACE_FUNC();
+
+    struct vn_ring_submit_command submit;
+    vn_submit_vkUpdateVideoSessionParametersKHR(vn_ring, VK_COMMAND_GENERATE_REPLY_BIT_EXT, device, videoSessionParameters, pUpdateInfo, &submit);
+    struct vn_cs_decoder *dec = vn_ring_get_command_reply(vn_ring, &submit);
+    if (dec) {
+        const VkResult ret = vn_decode_vkUpdateVideoSessionParametersKHR_reply(dec, device, videoSessionParameters, pUpdateInfo);
+        vn_ring_free_command_reply(vn_ring, &submit);
+        return ret;
+    } else {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+}
+
+static inline void vn_async_vkUpdateVideoSessionParametersKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkVideoSessionParametersUpdateInfoKHR* pUpdateInfo)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkUpdateVideoSessionParametersKHR(vn_ring, 0, device, videoSessionParameters, pUpdateInfo, &submit);
+}
+
+static inline void vn_async_vkDestroyVideoSessionParametersKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionParametersKHR videoSessionParameters, const VkAllocationCallbacks* pAllocator)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkDestroyVideoSessionParametersKHR(vn_ring, 0, device, videoSessionParameters, pAllocator, &submit);
+}
+
+static inline VkResult vn_call_vkGetVideoSessionMemoryRequirementsKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements)
+{
+    VN_TRACE_FUNC();
+
+    struct vn_ring_submit_command submit;
+    vn_submit_vkGetVideoSessionMemoryRequirementsKHR(vn_ring, VK_COMMAND_GENERATE_REPLY_BIT_EXT, device, videoSession, pMemoryRequirementsCount, pMemoryRequirements, &submit);
+    struct vn_cs_decoder *dec = vn_ring_get_command_reply(vn_ring, &submit);
+    if (dec) {
+        const VkResult ret = vn_decode_vkGetVideoSessionMemoryRequirementsKHR_reply(dec, device, videoSession, pMemoryRequirementsCount, pMemoryRequirements);
+        vn_ring_free_command_reply(vn_ring, &submit);
+        return ret;
+    } else {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+}
+
+static inline void vn_async_vkGetVideoSessionMemoryRequirementsKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionKHR videoSession, uint32_t* pMemoryRequirementsCount, VkVideoSessionMemoryRequirementsKHR* pMemoryRequirements)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkGetVideoSessionMemoryRequirementsKHR(vn_ring, 0, device, videoSession, pMemoryRequirementsCount, pMemoryRequirements, &submit);
+}
+
+static inline VkResult vn_call_vkBindVideoSessionMemoryKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos)
+{
+    VN_TRACE_FUNC();
+
+    struct vn_ring_submit_command submit;
+    vn_submit_vkBindVideoSessionMemoryKHR(vn_ring, VK_COMMAND_GENERATE_REPLY_BIT_EXT, device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos, &submit);
+    struct vn_cs_decoder *dec = vn_ring_get_command_reply(vn_ring, &submit);
+    if (dec) {
+        const VkResult ret = vn_decode_vkBindVideoSessionMemoryKHR_reply(dec, device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos);
+        vn_ring_free_command_reply(vn_ring, &submit);
+        return ret;
+    } else {
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+}
+
+static inline void vn_async_vkBindVideoSessionMemoryKHR(struct vn_ring *vn_ring, VkDevice device, VkVideoSessionKHR videoSession, uint32_t bindSessionMemoryInfoCount, const VkBindVideoSessionMemoryInfoKHR* pBindSessionMemoryInfos)
+{
+    struct vn_ring_submit_command submit;
+    vn_submit_vkBindVideoSessionMemoryKHR(vn_ring, 0, device, videoSession, bindSessionMemoryInfoCount, pBindSessionMemoryInfos, &submit);
 }
 
 static inline void vn_async_vkSetReplyCommandStreamMESA(struct vn_ring *vn_ring, const VkCommandStreamDescriptionMESA* pStream)

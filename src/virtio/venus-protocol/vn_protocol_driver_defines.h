@@ -476,6 +476,19 @@ typedef enum VkCommandTypeEXT {
     VK_COMMAND_TYPE_vkGetPhysicalDeviceDescriptorSizeEXT_EXT = 343,
     VK_COMMAND_TYPE_vkRegisterCustomBorderColorEXT_EXT = 344,
     VK_COMMAND_TYPE_vkUnregisterCustomBorderColorEXT_EXT = 345,
+    VK_COMMAND_TYPE_vkGetPhysicalDeviceVideoCapabilitiesKHR_EXT = 346,
+    VK_COMMAND_TYPE_vkGetPhysicalDeviceVideoFormatPropertiesKHR_EXT = 347,
+    VK_COMMAND_TYPE_vkCreateVideoSessionKHR_EXT = 348,
+    VK_COMMAND_TYPE_vkDestroyVideoSessionKHR_EXT = 349,
+    VK_COMMAND_TYPE_vkGetVideoSessionMemoryRequirementsKHR_EXT = 350,
+    VK_COMMAND_TYPE_vkBindVideoSessionMemoryKHR_EXT = 351,
+    VK_COMMAND_TYPE_vkCreateVideoSessionParametersKHR_EXT = 352,
+    VK_COMMAND_TYPE_vkUpdateVideoSessionParametersKHR_EXT = 353,
+    VK_COMMAND_TYPE_vkDestroyVideoSessionParametersKHR_EXT = 354,
+    VK_COMMAND_TYPE_vkCmdBeginVideoCodingKHR_EXT = 355,
+    VK_COMMAND_TYPE_vkCmdEndVideoCodingKHR_EXT = 356,
+    VK_COMMAND_TYPE_vkCmdControlVideoCodingKHR_EXT = 357,
+    VK_COMMAND_TYPE_vkCmdDecodeVideoKHR_EXT = 358,
 } VkCommandTypeEXT;
 
 typedef enum VkCommandFlagBitsEXT {

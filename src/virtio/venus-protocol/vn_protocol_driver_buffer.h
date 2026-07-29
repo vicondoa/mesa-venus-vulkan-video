@@ -208,6 +208,14 @@ vn_sizeof_VkBufferCreateInfo_pnext(const void *val)
             size += vn_sizeof_VkBufferCreateInfo_pnext(((const VkBufferDeviceAddressCreateInfoEXT *)pnext)->pNext);
             size += vn_sizeof_VkBufferDeviceAddressCreateInfoEXT_self((const VkBufferDeviceAddressCreateInfoEXT *)pnext);
             return size;
+        case VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(24 /* VK_KHR_video_queue */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkBufferCreateInfo_pnext(((const VkVideoProfileListInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoProfileListInfoKHR_self((const VkVideoProfileListInfoKHR *)pnext);
+            return size;
         default:
             /* ignore unknown/unsupported struct */
             break;
@@ -283,6 +291,14 @@ vn_encode_VkBufferCreateInfo_pnext(struct vn_cs_encoder *enc, const void *val)
             vn_encode_VkStructureType(enc, &pnext->sType);
             vn_encode_VkBufferCreateInfo_pnext(enc, ((const VkBufferDeviceAddressCreateInfoEXT *)pnext)->pNext);
             vn_encode_VkBufferDeviceAddressCreateInfoEXT_self(enc, (const VkBufferDeviceAddressCreateInfoEXT *)pnext);
+            return;
+        case VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(24 /* VK_KHR_video_queue */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkBufferCreateInfo_pnext(enc, ((const VkVideoProfileListInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoProfileListInfoKHR_self(enc, (const VkVideoProfileListInfoKHR *)pnext);
             return;
         default:
             /* ignore unknown/unsupported struct */

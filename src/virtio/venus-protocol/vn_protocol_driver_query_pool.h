@@ -16,7 +16,42 @@
 static inline size_t
 vn_sizeof_VkQueryPoolCreateInfo_pnext(const void *val)
 {
-    /* no known/supported struct */
+    const VkBaseInStructure *pnext = val;
+    size_t size = 0;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(24 /* VK_KHR_video_queue */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkQueryPoolCreateInfo_pnext(((const VkVideoProfileInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoProfileInfoKHR_self((const VkVideoProfileInfoKHR *)pnext);
+            return size;
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(25 /* VK_KHR_video_decode_queue */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkQueryPoolCreateInfo_pnext(((const VkVideoDecodeUsageInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoDecodeUsageInfoKHR_self((const VkVideoDecodeUsageInfoKHR *)pnext);
+            return size;
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkQueryPoolCreateInfo_pnext(((const VkVideoDecodeH264ProfileInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoDecodeH264ProfileInfoKHR_self((const VkVideoDecodeH264ProfileInfoKHR *)pnext);
+            return size;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
     return vn_sizeof_simple_pointer(NULL);
 }
 
@@ -47,7 +82,41 @@ vn_sizeof_VkQueryPoolCreateInfo(const VkQueryPoolCreateInfo *val)
 static inline void
 vn_encode_VkQueryPoolCreateInfo_pnext(struct vn_cs_encoder *enc, const void *val)
 {
-    /* no known/supported struct */
+    const VkBaseInStructure *pnext = val;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(24 /* VK_KHR_video_queue */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkQueryPoolCreateInfo_pnext(enc, ((const VkVideoProfileInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoProfileInfoKHR_self(enc, (const VkVideoProfileInfoKHR *)pnext);
+            return;
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(25 /* VK_KHR_video_decode_queue */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkQueryPoolCreateInfo_pnext(enc, ((const VkVideoDecodeUsageInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoDecodeUsageInfoKHR_self(enc, (const VkVideoDecodeUsageInfoKHR *)pnext);
+            return;
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkQueryPoolCreateInfo_pnext(enc, ((const VkVideoDecodeH264ProfileInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoDecodeH264ProfileInfoKHR_self(enc, (const VkVideoDecodeH264ProfileInfoKHR *)pnext);
+            return;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
     vn_encode_simple_pointer(enc, NULL);
 }
 

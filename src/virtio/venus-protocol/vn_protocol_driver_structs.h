@@ -329,6 +329,226 @@ vn_encode_VkSemaphoreTypeCreateInfo(struct vn_cs_encoder *enc, const VkSemaphore
     vn_encode_VkSemaphoreTypeCreateInfo_self(enc, val);
 }
 
+/* struct VkVideoDecodeUsageInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoDecodeUsageInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeUsageInfoKHR_self(const VkVideoDecodeUsageInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_VkFlags(&val->videoUsageHints);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeUsageInfoKHR(const VkVideoDecodeUsageInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoDecodeUsageInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoDecodeUsageInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoDecodeUsageInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoDecodeUsageInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoDecodeUsageInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_VkFlags(enc, &val->videoUsageHints);
+}
+
+static inline void
+vn_encode_VkVideoDecodeUsageInfoKHR(struct vn_cs_encoder *enc, const VkVideoDecodeUsageInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR });
+    vn_encode_VkVideoDecodeUsageInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoDecodeUsageInfoKHR_self(enc, val);
+}
+
+/* struct VkVideoDecodeH264ProfileInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264ProfileInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264ProfileInfoKHR_self(const VkVideoDecodeH264ProfileInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_StdVideoH264ProfileIdc(&val->stdProfileIdc);
+    size += vn_sizeof_VkVideoDecodeH264PictureLayoutFlagBitsKHR(&val->pictureLayout);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoDecodeH264ProfileInfoKHR(const VkVideoDecodeH264ProfileInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoDecodeH264ProfileInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoDecodeH264ProfileInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264ProfileInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264ProfileInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoDecodeH264ProfileInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_StdVideoH264ProfileIdc(enc, &val->stdProfileIdc);
+    vn_encode_VkVideoDecodeH264PictureLayoutFlagBitsKHR(enc, &val->pictureLayout);
+}
+
+static inline void
+vn_encode_VkVideoDecodeH264ProfileInfoKHR(struct vn_cs_encoder *enc, const VkVideoDecodeH264ProfileInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR });
+    vn_encode_VkVideoDecodeH264ProfileInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoDecodeH264ProfileInfoKHR_self(enc, val);
+}
+
+/* struct VkVideoProfileInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoProfileInfoKHR_pnext(const void *val)
+{
+    const VkBaseInStructure *pnext = val;
+    size_t size = 0;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(25 /* VK_KHR_video_decode_queue */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkVideoProfileInfoKHR_pnext(((const VkVideoDecodeUsageInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoDecodeUsageInfoKHR_self((const VkVideoDecodeUsageInfoKHR *)pnext);
+            return size;
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            size += vn_sizeof_simple_pointer(pnext);
+            size += vn_sizeof_VkStructureType(&pnext->sType);
+            size += vn_sizeof_VkVideoProfileInfoKHR_pnext(((const VkVideoDecodeH264ProfileInfoKHR *)pnext)->pNext);
+            size += vn_sizeof_VkVideoDecodeH264ProfileInfoKHR_self((const VkVideoDecodeH264ProfileInfoKHR *)pnext);
+            return size;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoProfileInfoKHR_self(const VkVideoProfileInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_VkVideoCodecOperationFlagBitsKHR(&val->videoCodecOperation);
+    size += vn_sizeof_VkFlags(&val->chromaSubsampling);
+    size += vn_sizeof_VkFlags(&val->lumaBitDepth);
+    size += vn_sizeof_VkFlags(&val->chromaBitDepth);
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoProfileInfoKHR(const VkVideoProfileInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoProfileInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoProfileInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoProfileInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    const VkBaseInStructure *pnext = val;
+
+    while (pnext) {
+        switch ((int32_t)pnext->sType) {
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_USAGE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(25 /* VK_KHR_video_decode_queue */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkVideoProfileInfoKHR_pnext(enc, ((const VkVideoDecodeUsageInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoDecodeUsageInfoKHR_self(enc, (const VkVideoDecodeUsageInfoKHR *)pnext);
+            return;
+        case VK_STRUCTURE_TYPE_VIDEO_DECODE_H264_PROFILE_INFO_KHR:
+            if (!vn_cs_renderer_protocol_has_extension(41 /* VK_KHR_video_decode_h264 */))
+                break;
+            vn_encode_simple_pointer(enc, pnext);
+            vn_encode_VkStructureType(enc, &pnext->sType);
+            vn_encode_VkVideoProfileInfoKHR_pnext(enc, ((const VkVideoDecodeH264ProfileInfoKHR *)pnext)->pNext);
+            vn_encode_VkVideoDecodeH264ProfileInfoKHR_self(enc, (const VkVideoDecodeH264ProfileInfoKHR *)pnext);
+            return;
+        default:
+            /* ignore unknown/unsupported struct */
+            break;
+        }
+        pnext = pnext->pNext;
+    }
+
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoProfileInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoProfileInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_VkVideoCodecOperationFlagBitsKHR(enc, &val->videoCodecOperation);
+    vn_encode_VkFlags(enc, &val->chromaSubsampling);
+    vn_encode_VkFlags(enc, &val->lumaBitDepth);
+    vn_encode_VkFlags(enc, &val->chromaBitDepth);
+}
+
+static inline void
+vn_encode_VkVideoProfileInfoKHR(struct vn_cs_encoder *enc, const VkVideoProfileInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_PROFILE_INFO_KHR });
+    vn_encode_VkVideoProfileInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoProfileInfoKHR_self(enc, val);
+}
+
 /* struct VkBufferUsageFlags2CreateInfo chain */
 
 static inline size_t
@@ -380,6 +600,73 @@ vn_encode_VkBufferUsageFlags2CreateInfo(struct vn_cs_encoder *enc, const VkBuffe
     vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_BUFFER_USAGE_FLAGS_2_CREATE_INFO });
     vn_encode_VkBufferUsageFlags2CreateInfo_pnext(enc, val->pNext);
     vn_encode_VkBufferUsageFlags2CreateInfo_self(enc, val);
+}
+
+/* struct VkVideoProfileListInfoKHR chain */
+
+static inline size_t
+vn_sizeof_VkVideoProfileListInfoKHR_pnext(const void *val)
+{
+    /* no known/supported struct */
+    return vn_sizeof_simple_pointer(NULL);
+}
+
+static inline size_t
+vn_sizeof_VkVideoProfileListInfoKHR_self(const VkVideoProfileListInfoKHR *val)
+{
+    size_t size = 0;
+    /* skip val->{sType,pNext} */
+    size += vn_sizeof_uint32_t(&val->profileCount);
+    if (val->pProfiles) {
+        size += vn_sizeof_array_size(val->profileCount);
+        for (uint32_t i = 0; i < val->profileCount; i++)
+            size += vn_sizeof_VkVideoProfileInfoKHR(&val->pProfiles[i]);
+    } else {
+        size += vn_sizeof_array_size(0);
+    }
+    return size;
+}
+
+static inline size_t
+vn_sizeof_VkVideoProfileListInfoKHR(const VkVideoProfileListInfoKHR *val)
+{
+    size_t size = 0;
+
+    size += vn_sizeof_VkStructureType(&val->sType);
+    size += vn_sizeof_VkVideoProfileListInfoKHR_pnext(val->pNext);
+    size += vn_sizeof_VkVideoProfileListInfoKHR_self(val);
+
+    return size;
+}
+
+static inline void
+vn_encode_VkVideoProfileListInfoKHR_pnext(struct vn_cs_encoder *enc, const void *val)
+{
+    /* no known/supported struct */
+    vn_encode_simple_pointer(enc, NULL);
+}
+
+static inline void
+vn_encode_VkVideoProfileListInfoKHR_self(struct vn_cs_encoder *enc, const VkVideoProfileListInfoKHR *val)
+{
+    /* skip val->{sType,pNext} */
+    vn_encode_uint32_t(enc, &val->profileCount);
+    if (val->pProfiles) {
+        vn_encode_array_size(enc, val->profileCount);
+        for (uint32_t i = 0; i < val->profileCount; i++)
+            vn_encode_VkVideoProfileInfoKHR(enc, &val->pProfiles[i]);
+    } else {
+        vn_encode_array_size(enc, 0);
+    }
+}
+
+static inline void
+vn_encode_VkVideoProfileListInfoKHR(struct vn_cs_encoder *enc, const VkVideoProfileListInfoKHR *val)
+{
+    assert(val->sType == VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR);
+    vn_encode_VkStructureType(enc, &(VkStructureType){ VK_STRUCTURE_TYPE_VIDEO_PROFILE_LIST_INFO_KHR });
+    vn_encode_VkVideoProfileListInfoKHR_pnext(enc, val->pNext);
+    vn_encode_VkVideoProfileListInfoKHR_self(enc, val);
 }
 
 /* struct VkImageFormatListCreateInfo chain */

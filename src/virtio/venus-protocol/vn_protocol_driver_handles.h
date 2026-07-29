@@ -723,4 +723,50 @@ vn_decode_VkTensorARM(struct vn_cs_decoder *dec, VkTensorARM *val)
     vn_cs_handle_store_id((void **)val, id, VK_OBJECT_TYPE_TENSOR_ARM);
 }
 
+/* VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkVideoSessionKHR) */
+
+static inline size_t
+vn_sizeof_VkVideoSessionKHR(const VkVideoSessionKHR *val)
+{
+    return sizeof(uint64_t);
+}
+
+static inline void
+vn_encode_VkVideoSessionKHR(struct vn_cs_encoder *enc, const VkVideoSessionKHR *val)
+{
+    const uint64_t id = vn_cs_handle_load_id((const void **)val, VK_OBJECT_TYPE_VIDEO_SESSION_KHR);
+    vn_encode_uint64_t(enc, &id);
+}
+
+static inline void
+vn_decode_VkVideoSessionKHR(struct vn_cs_decoder *dec, VkVideoSessionKHR *val)
+{
+    uint64_t id;
+    vn_decode_uint64_t(dec, &id);
+    vn_cs_handle_store_id((void **)val, id, VK_OBJECT_TYPE_VIDEO_SESSION_KHR);
+}
+
+/* VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkVideoSessionParametersKHR) */
+
+static inline size_t
+vn_sizeof_VkVideoSessionParametersKHR(const VkVideoSessionParametersKHR *val)
+{
+    return sizeof(uint64_t);
+}
+
+static inline void
+vn_encode_VkVideoSessionParametersKHR(struct vn_cs_encoder *enc, const VkVideoSessionParametersKHR *val)
+{
+    const uint64_t id = vn_cs_handle_load_id((const void **)val, VK_OBJECT_TYPE_VIDEO_SESSION_PARAMETERS_KHR);
+    vn_encode_uint64_t(enc, &id);
+}
+
+static inline void
+vn_decode_VkVideoSessionParametersKHR(struct vn_cs_decoder *dec, VkVideoSessionParametersKHR *val)
+{
+    uint64_t id;
+    vn_decode_uint64_t(dec, &id);
+    vn_cs_handle_store_id((void **)val, id, VK_OBJECT_TYPE_VIDEO_SESSION_PARAMETERS_KHR);
+}
+
 #endif /* VN_PROTOCOL_DRIVER_HANDLES_H */
