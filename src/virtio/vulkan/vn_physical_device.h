@@ -103,6 +103,13 @@ struct vn_physical_device {
 
    VkQueueFamilyProperties2 *queue_family_properties;
    VkQueueFamilyGlobalPriorityProperties *global_priority_properties;
+   /* Per-family video codec operations, queried once alongside the rest of the
+    * queue family properties. Venus serves queue family queries from this
+    * cache rather than forwarding them, so anything an application chains onto
+    * VkQueueFamilyProperties2 has to be cached here or it is silently never
+    * filled.
+    */
+   VkQueueFamilyVideoPropertiesKHR *video_properties;
    uint32_t queue_family_count;
    bool sparse_binding_disabled;
    /* Track the queue family index to emulate a second queue. -1 means no

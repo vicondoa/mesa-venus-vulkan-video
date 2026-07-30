@@ -919,13 +919,23 @@ vn_physical_device_init_queue_family_properties(
 
    const bool can_query_prio =
       physical_dev->base.vk.supported_features.globalPriorityQuery;
+   /* Gate on the RENDERER's advertisement, not the driver's passthrough table:
+    * this runs during physical device init, before the two are intersected,
+    * and chaining a struct the renderer cannot fill would leave stale zeroes
+    * indistinguishable from a real "no codecs" answer.
+    */
+   const bool can_query_video =
+      physical_dev->renderer_extensions.KHR_video_queue;
    VkQueueFamilyProperties2 *props;
    VkQueueFamilyGlobalPriorityProperties *prio_props = NULL;
+   VkQueueFamilyVideoPropertiesKHR *video_props = NULL;
 
    VK_MULTIALLOC(ma);
    vk_multialloc_add(&ma, &props, __typeof__(*props), count);
    if (can_query_prio)
       vk_multialloc_add(&ma, &prio_props, __typeof__(*prio_props), count);
+   if (can_query_video)
+      vk_multialloc_add(&ma, &video_props, __typeof__(*video_props), count);
 
    if (!vk_multialloc_zalloc(&ma, alloc, VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE))
       return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -936,6 +946,12 @@ vn_physical_device_init_queue_family_properties(
          prio_props[i].sType =
             VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES;
          props[i].pNext = &prio_props[i];
+      }
+      if (can_query_video) {
+         video_props[i].sType =
+            VK_STRUCTURE_TYPE_QUEUE_FAMILY_VIDEO_PROPERTIES_KHR;
+         video_props[i].pNext = props[i].pNext;
+         props[i].pNext = &video_props[i];
       }
    }
    vn_call_vkGetPhysicalDeviceQueueFamilyProperties2(
@@ -969,6 +985,7 @@ vn_physical_device_init_queue_family_properties(
 
    physical_dev->queue_family_properties = props;
    physical_dev->global_priority_properties = prio_props;
+   physical_dev->video_properties = video_props;
    physical_dev->queue_family_count = count;
 
    return VK_SUCCESS;
@@ -2173,6 +2190,23 @@ vn_GetPhysicalDeviceQueueFamilyProperties2(
                void *pnext = prio_props->pNext;
                *prio_props = physical_dev->global_priority_properties[i];
                prio_props->pNext = pnext;
+            }
+         }
+
+         /* Video codec operations per family.
+          *
+          * Without this the decode queue bit is visible but the codec list is
+          * empty, so an application sees a video queue that decodes nothing
+          * and correctly refuses to use it. FFmpeg's failure mode there is a
+          * silent fall back to software.
+          */
+         if (physical_dev->video_properties) {
+            VkQueueFamilyVideoPropertiesKHR *video_props =
+               vk_find_struct(props->pNext, QUEUE_FAMILY_VIDEO_PROPERTIES_KHR);
+            if (video_props) {
+               void *pnext = video_props->pNext;
+               *video_props = physical_dev->video_properties[i];
+               video_props->pNext = pnext;
             }
          }
       }
