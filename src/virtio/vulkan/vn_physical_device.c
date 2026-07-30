@@ -919,13 +919,23 @@ vn_physical_device_init_queue_family_properties(
 
    const bool can_query_prio =
       physical_dev->base.vk.supported_features.globalPriorityQuery;
+   /* Gate on the RENDERER's advertisement, not the driver's passthrough table:
+    * this runs during physical device init, before the two are intersected,
+    * and chaining a struct the renderer cannot fill would leave stale zeroes
+    * indistinguishable from a real "no codecs" answer.
+    */
+   const bool can_query_video =
+      physical_dev->renderer_extensions.KHR_video_queue;
    VkQueueFamilyProperties2 *props;
    VkQueueFamilyGlobalPriorityProperties *prio_props = NULL;
+   VkQueueFamilyVideoPropertiesKHR *video_props = NULL;
 
    VK_MULTIALLOC(ma);
    vk_multialloc_add(&ma, &props, __typeof__(*props), count);
    if (can_query_prio)
       vk_multialloc_add(&ma, &prio_props, __typeof__(*prio_props), count);
+   if (can_query_video)
+      vk_multialloc_add(&ma, &video_props, __typeof__(*video_props), count);
 
    if (!vk_multialloc_zalloc(&ma, alloc, VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE))
       return VK_ERROR_OUT_OF_HOST_MEMORY;
@@ -936,6 +946,12 @@ vn_physical_device_init_queue_family_properties(
          prio_props[i].sType =
             VK_STRUCTURE_TYPE_QUEUE_FAMILY_GLOBAL_PRIORITY_PROPERTIES;
          props[i].pNext = &prio_props[i];
+      }
+      if (can_query_video) {
+         video_props[i].sType =
+            VK_STRUCTURE_TYPE_QUEUE_FAMILY_VIDEO_PROPERTIES_KHR;
+         video_props[i].pNext = props[i].pNext;
+         props[i].pNext = &video_props[i];
       }
    }
    vn_call_vkGetPhysicalDeviceQueueFamilyProperties2(
@@ -969,6 +985,7 @@ vn_physical_device_init_queue_family_properties(
 
    physical_dev->queue_family_properties = props;
    physical_dev->global_priority_properties = prio_props;
+   physical_dev->video_properties = video_props;
    physical_dev->queue_family_count = count;
 
    return VK_SUCCESS;
@@ -1392,6 +1409,21 @@ vn_physical_device_get_passthrough_extensions(
       .KHR_shader_relaxed_extended_instruction = true,
       .KHR_shader_subgroup_uniform_control_flow = true,
       .KHR_shader_untyped_pointers = true,
+      /* Vulkan Video -- DECODE ONLY, H.264 only.
+       *
+       * Exposure is the AND of this table and the renderer's capset, so this
+       * alone advertises nothing if the renderer lacks video. Encode is
+       * deliberately absent.
+       *
+       * Every entrypoint of these three is implemented in vn_video.c. That is
+       * load bearing rather than incidental: the entrypoint generator emits
+       * WEAK references, so a missing vn_* is not a build error -- it becomes
+       * a NULL dispatch slot and the extension is advertised while calls
+       * through it do nothing or crash.
+       */
+      .KHR_video_queue = true,
+      .KHR_video_decode_queue = true,
+      .KHR_video_decode_h264 = true,
       .KHR_workgroup_memory_explicit_layout = true,
 
       /* EXT */
@@ -2160,6 +2192,23 @@ vn_GetPhysicalDeviceQueueFamilyProperties2(
                prio_props->pNext = pnext;
             }
          }
+
+         /* Video codec operations per family.
+          *
+          * Without this the decode queue bit is visible but the codec list is
+          * empty, so an application sees a video queue that decodes nothing
+          * and correctly refuses to use it. FFmpeg's failure mode there is a
+          * silent fall back to software.
+          */
+         if (physical_dev->video_properties) {
+            VkQueueFamilyVideoPropertiesKHR *video_props =
+               vk_find_struct(props->pNext, QUEUE_FAMILY_VIDEO_PROPERTIES_KHR);
+            if (video_props) {
+               void *pnext = video_props->pNext;
+               *video_props = physical_dev->video_properties[i];
+               video_props->pNext = pnext;
+            }
+         }
       }
    }
 }
@@ -2218,9 +2267,44 @@ vn_sanitize_format_properties(VkFormat format,
       VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_MINMAX_BIT |
       VK_FORMAT_FEATURE_DISJOINT_BIT;
 
+   /* H.264 decode needs the decode bits on its output and DPB format.
+    *
+    * Upstream MR !35842 added the mask above, which strips
+    * VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR and
+    * VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR from every format below --
+    * correct while Venus could not carry video, because reporting a decode
+    * capability the stack cannot deliver is worse than reporting none.
+    *
+    * Venus now forwards H.264 decode, so keeping the strip would leave the
+    * extension advertised while the one mandatory decode format claims it
+    * cannot be a decode target. FFmpeg reads that as "no usable format" and
+    * falls back to software, which is exactly the silent failure this
+    * prototype exists to avoid.
+    *
+    * Scoped as narrowly as the requirement allows: DECODE bits only, on
+    * VK_FORMAT_G8_B8R8_2PLANE_420_UNORM only -- the mandatory H.264 decode
+    * format. P010 and P012 keep the strip because nothing here decodes 10- or
+    * 12-bit, and every ENCODE bit stays stripped for every format because
+    * neither Venus nor the renderer implements encode at all.
+    */
+   static const VkFormatFeatureFlags allowed_h264_decode_feats =
+      VK_FORMAT_FEATURE_VIDEO_DECODE_OUTPUT_BIT_KHR |
+      VK_FORMAT_FEATURE_VIDEO_DECODE_DPB_BIT_KHR;
+
    /* TODO drop rgba10x6 after supporting VK_EXT_rgba10x6_formats */
    switch (format) {
-   case VK_FORMAT_G8_B8R8_2PLANE_420_UNORM:
+   case VK_FORMAT_G8_B8R8_2PLANE_420_UNORM: {
+      /* The mandatory H.264 decode format: keep the decode bits. */
+      const VkFormatFeatureFlags allowed =
+         allowed_ycbcr_feats | allowed_h264_decode_feats;
+      props->linearTilingFeatures &= allowed;
+      props->optimalTilingFeatures &= allowed;
+      if (props3) {
+         props3->linearTilingFeatures &= allowed;
+         props3->optimalTilingFeatures &= allowed;
+      }
+      break;
+   }
    case VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16:
    case VK_FORMAT_G12X4_B12X4R12X4_2PLANE_420_UNORM_3PACK16:
    case VK_FORMAT_R10X6G10X6B10X6A10X6_UNORM_4PACK16:

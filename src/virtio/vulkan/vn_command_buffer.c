@@ -2839,3 +2839,43 @@ vn_CmdPushDataEXT(VkCommandBuffer commandBuffer,
 {
    VN_CMD_ENQUEUE(vkCmdPushDataEXT, commandBuffer, pPushDataInfo);
 }
+
+/* --- VK_KHR_video_decode_h264 command recording -------------------------
+ *
+ * These live here rather than in vn_video.c because VN_CMD_ENQUEUE expands to
+ * a call to the file-static vn_cmd_submit(). Upstream keeps every vn_Cmd*
+ * entrypoint in this file, so following that split costs nothing and avoids
+ * un-static-ing a function purely to accommodate a fork.
+ *
+ * Recording only: no reply, no return value, and the host driver validates.
+ */
+
+VKAPI_ATTR void VKAPI_CALL
+vn_CmdBeginVideoCodingKHR(VkCommandBuffer commandBuffer,
+                          const VkVideoBeginCodingInfoKHR *pBeginInfo)
+{
+   VN_CMD_ENQUEUE(vkCmdBeginVideoCodingKHR, commandBuffer, pBeginInfo);
+}
+
+VKAPI_ATTR void VKAPI_CALL
+vn_CmdEndVideoCodingKHR(VkCommandBuffer commandBuffer,
+                        const VkVideoEndCodingInfoKHR *pEndCodingInfo)
+{
+   VN_CMD_ENQUEUE(vkCmdEndVideoCodingKHR, commandBuffer, pEndCodingInfo);
+}
+
+VKAPI_ATTR void VKAPI_CALL
+vn_CmdControlVideoCodingKHR(
+   VkCommandBuffer commandBuffer,
+   const VkVideoCodingControlInfoKHR *pCodingControlInfo)
+{
+   VN_CMD_ENQUEUE(vkCmdControlVideoCodingKHR, commandBuffer,
+                  pCodingControlInfo);
+}
+
+VKAPI_ATTR void VKAPI_CALL
+vn_CmdDecodeVideoKHR(VkCommandBuffer commandBuffer,
+                     const VkVideoDecodeInfoKHR *pDecodeInfo)
+{
+   VN_CMD_ENQUEUE(vkCmdDecodeVideoKHR, commandBuffer, pDecodeInfo);
+}
