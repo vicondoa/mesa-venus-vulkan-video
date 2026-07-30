@@ -128,6 +128,11 @@ enum vn_debug {
    VN_DEBUG_NO_RAY_TRACING = 1ull << 10,
    VN_DEBUG_MEM_BUDGET = 1ull << 11,
    VN_DEBUG_NO_DESC_HEAP = 1ull << 12,
+   /* Report the guest virtio-gpu DRM node truthfully instead of zeroing it on
+    * NVIDIA hosts. See the spoof in vn_wsi.c for why it exists and what it
+    * breaks.
+    */
+   VN_DEBUG_NO_NVIDIA_DRM_SPOOF = 1ull << 13,
 };
 
 enum vn_perf {

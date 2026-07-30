@@ -155,7 +155,29 @@ vn_wsi_init(struct vn_physical_device *physical_dev)
    const bool is_nvidia = props->vendorID == 0x10de;
    const char *app_name = physical_dev->instance->base.vk.app_info.app_name;
    const bool is_gamescope = app_name && strcmp(app_name, "gamescope") == 0;
-   if (is_nvidia && !is_gamescope) {
+
+   /* VN_DEBUG=no_nvidia_drm_spoof disables the spoof below.
+    *
+    * The spoof zeroes the DRM node so the WSI same-GPU check fails and Venus
+    * takes the prime-blit path. That is a WSI concern, but the zeroed node is
+    * visible to EVERY consumer of VK_EXT_physical_device_drm -- and Firefox's
+    * Vulkan video decoder uses exactly that node to decide whether the decode
+    * device and the compositor are the same GPU.
+    *
+    * When it decides they are not, it skips its own NVIDIA workaround that
+    * substitutes a tiled DRM modifier for LINEAR. That leaves LINEAR as the
+    * only modifier, which disables direct decode export, which forces a copy
+    * path whose GL BlitTextureToTexture fails on virgl and permanently wedges
+    * the rendering context. The observable result is a video that plays for
+    * about half a second and then shows a green frame.
+    *
+    * So this flag is not a debugging convenience; it is the difference between
+    * hardware video decode presenting and not. It is opt-in because the spoof
+    * it disables is a real workaround for a real WSI problem, and turning it
+    * off is only safe where Vulkan WSI presentation is not the path in use.
+    */
+   const bool no_drm_spoof = VN_DEBUG(NO_NVIDIA_DRM_SPOOF);
+   if (is_nvidia && !is_gamescope && !no_drm_spoof) {
       /* Fail same_gpu check on x11. See wsi_device_matches_drm_fd. */
       physical_dev->base.vk.supported_extensions.EXT_pci_bus_info = false;
       props->pciDomain = 0;
