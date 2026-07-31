@@ -109,6 +109,25 @@ static const enum virgl_formats virgl_formats_conv_table[PIPE_FORMAT_COUNT] = {
    CONV_FORMAT(R16G16B16A16_SSCALED)
    CONV_FORMAT(R8_UNORM)
    CONV_FORMAT(R8G8_UNORM)
+   /* Same two-component 8-bit UNORM layout as R8G8_UNORM, but a distinct pipe
+    * format: RG88 is the packed spelling and R8G8 the array spelling. On
+    * little-endian both are byte 0 = R, byte 1 = G, so the wire format is
+    * identical and the array entry is the correct target.
+    *
+    * The CONV_FORMAT macro cannot express this, because it derives the virgl
+    * name from the pipe name and there is no VIRGL_FORMAT_RG88_UNORM.
+    * Without an explicit entry pipe_to_virgl_format() falls through to
+    * VIRGL_FORMAT_NONE, and the omission is silent in any build where
+    * debug_printf goes nowhere.
+    *
+    * This is reachable from ordinary video playback. An NV12 chroma plane is
+    * imported as DRM_FORMAT_GR88, which Mesa maps to PIPE_FORMAT_RG88_UNORM
+    * (dri_helpers.c), so the plane loses its format on the way to the host.
+    * The visible result is a decoded frame whose luma is correct and whose
+    * chroma never arrives: U and V stay at 0 rather than neutral 128, which
+    * YUV-to-RGB renders as a green cast over an otherwise correct picture.
+    */
+   [PIPE_FORMAT_RG88_UNORM] = VIRGL_FORMAT_R8G8_UNORM,
    CONV_FORMAT(R8G8B8_UNORM)
    CONV_FORMAT(R8G8B8A8_UNORM)
    CONV_FORMAT(X8B8G8R8_UNORM)
