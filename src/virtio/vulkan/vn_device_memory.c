@@ -562,7 +562,39 @@ vn_GetMemoryFdKHR(VkDevice device,
    assert(pGetFdInfo->handleType &
           (VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT |
            VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT));
+
+   /* base_bo is populated only for memory that went through the export or
+    * guest-vram allocation path. Exporting memory that was allocated without
+    * an export handle type is invalid use, and the assert below is the
+    * upstream way of saying so -- but it compiles out in release builds, and
+    * what follows is then an unconditional NULL dereference inside the guest's
+    * ICD.
+    *
+    * That distinction is not academic here. Firefox reaches this exact state:
+    * it forces DRM-modifier tiling on the decode frames pool whenever the
+    * modifier list is not linear-only, but ffmpeg only requests exportable
+    * memory when vkGetPhysicalDeviceImageFormatProperties2 confirms the
+    * combination, and for a decode-output image that query is refused (it is
+    * refused by the host NVIDIA driver too, so this is not Venus lagging the
+    * host). The frames are therefore allocated non-exportable and then mapped
+    * anyway, because Firefox checks the tiling it asked for rather than
+    * whether the allocation honoured it.
+    *
+    * Crashing there costs far more than the invalid call does. It kills the
+    * RDD process, and Firefox responds by relaunching it with hardware decode
+    * disabled, so every later frame is decoded in software with nothing in any
+    * log saying why. Returning an error instead lets Firefox take the recovery
+    * path it already has -- "av_hwframe_map (Vulkan->DRM) failed, falling back
+    * to copy" -- and hardware decode survives.
+    *
+    * This does not make the caller correct, and it is not a substitute for
+    * export support. It makes an unsupported operation fail like an
+    * unsupported operation.
+    */
    assert(mem->base_bo);
+   if (!mem->base_bo)
+      return vn_error(dev->instance, VK_ERROR_OUT_OF_HOST_MEMORY);
+
    *pFd = vn_renderer_bo_export_dma_buf(dev->renderer, mem->base_bo);
    if (*pFd < 0)
       return vn_error(dev->instance, VK_ERROR_TOO_MANY_OBJECTS);
