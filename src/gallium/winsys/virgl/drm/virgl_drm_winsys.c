@@ -675,11 +675,19 @@ virgl_drm_winsys_resource_set_type(struct virgl_winsys *qws,
 
    mtx_lock(&qdws->bo_handles_mutex);
 
-   if (!res->maybe_untyped) {
+   /* A resource is described once, when it is still untyped. A later
+    * description that covers more planes than any before it is not a retype
+    * though: it tells the host about a plane of the same buffer that nothing
+    * has described yet, which is how a client that imports the planes of one
+    * multi-planar frame as separate images presents them. Dropping it left
+    * every plane after the first invisible to the host.
+    */
+   if (!res->maybe_untyped && plane_count <= res->described_plane_count) {
       mtx_unlock(&qdws->bo_handles_mutex);
       return;
    }
    res->maybe_untyped = false;
+   res->described_plane_count = plane_count;
 
    assert(plane_count && plane_count <= VIRGL_MAX_PLANE_COUNT);
 

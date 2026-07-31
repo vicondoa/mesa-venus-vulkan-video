@@ -70,6 +70,9 @@ struct virgl_hw_res {
     * Offsets are recorded in first-seen order, so the index of an offset is
     * the plane index. Plane 0 is at offset 0 by construction.
     */
+   /* Widest plane count already described to the host for this buffer. */
+   uint32_t described_plane_count;
+
    uint32_t import_plane_count;
    uint32_t import_plane_offsets[VIRGL_MAX_PLANE_COUNT];
    uint32_t import_plane_strides[VIRGL_MAX_PLANE_COUNT];
