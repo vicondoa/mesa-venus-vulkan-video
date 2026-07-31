@@ -528,6 +528,29 @@ virgl_drm_winsys_resource_create_handle(struct virgl_winsys *qws,
       goto done;
    }
 
+   /* Opt-in import trace.
+    *
+    * Two plane fds that name regions of one buffer resolve to the SAME GEM
+    * handle here, and the second lookup then returns the cached virgl_hw_res
+    * belonging to the first plane. Nothing downstream can tell that apart from
+    * a genuine per-plane resource, so a chroma plane silently inherits the
+    * luma plane's type. Whether that is happening is exactly what this prints:
+    * identical handles with a hit on the second import is the signature.
+    */
+   {
+      static int trace = -1;
+      if (trace < 0)
+         trace = getenv("VIRGL_TRACE_IMPORT") ? 1 : 0;
+      if (trace)
+         fprintf(stderr,
+                 "[virgl-import] fd=%d -> gem_handle=%u cache=%s plane=%u "
+                 "stride=%u offset=%u fmt=%u modifier=0x%llx\n",
+                 whandle->handle, handle, res ? "HIT" : "miss",
+                 whandle->plane, whandle->stride, whandle->offset,
+                 (unsigned)whandle->format,
+                 (unsigned long long)whandle->modifier);
+   }
+
    if (res) {
       /* qdws->bo_{names,handles} hold weak pointers to virgl_hw_res. Because
        * virgl_drm_resource_reference does not take qdws->bo_handles_mutex

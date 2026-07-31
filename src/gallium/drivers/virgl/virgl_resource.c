@@ -20,6 +20,7 @@
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#include <stdio.h>
 #include "util/u_drm.h"
 #include "util/format/u_format.h"
 #include "util/u_inlines.h"
@@ -870,6 +871,34 @@ static struct pipe_resource *virgl_resource_from_handle(struct pipe_screen *scre
 
    if (res->metadata.total_size > storage_size)
       res->use_staging = 1;
+
+   /* Opt-in import trace: report the gate values for EVERY import, not only
+    * the ones that end up typing the resource.
+    *
+    * This call is the only place the guest tells the host what an imported
+    * dmabuf is. If it is skipped, the host keeps whatever type the resource
+    * already had, and a chroma plane sharing a buffer with luma silently
+    * inherits luma's format and geometry. Logging only the taken branch would
+    * hide exactly the case of interest, so both gates are printed.
+    */
+   {
+      static int trace = -1;
+      if (trace < 0)
+         trace = getenv("VIRGL_TRACE_IMPORT") ? 1 : 0;
+      if (trace) {
+         bool cap_ok = (vs->caps.caps.v2.host_feature_check_version >= 18 ||
+                        (vs->caps.caps.v2.capability_bits_v2 &
+                         VIRGL_CAP_V2_UNTYPED_RESOURCE));
+         fprintf(stderr,
+                 "[virgl-import]   from_handle: pipe_fmt=%u %ux%u plane=%u "
+                 "blob_mem=%u cap_ok=%d -> %s (virgl_fmt=%u)\n",
+                 (unsigned)res->b.format, res->b.width0, res->b.height0,
+                 plane, res->blob_mem, (int)cap_ok,
+                 (res->blob_mem && plane == 0 && cap_ok) ? "WILL TYPE"
+                                                         : "NOT TYPED",
+                 (unsigned)pipe_to_virgl_format(res->b.format));
+      }
+   }
 
    /* assign blob resource a type in case it was created untyped */
    if (res->blob_mem && plane == 0 &&
