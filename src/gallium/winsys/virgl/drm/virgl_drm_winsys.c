@@ -566,6 +566,15 @@ virgl_drm_winsys_resource_create_handle(struct virgl_winsys *qws,
       if (ref == 1)
          res->needed_references++;
 
+      /* The caller decides whether to describe this resource to the host from
+       * blob_mem, and it is only assigned on the path that queries
+       * RESOURCE_INFO. Returning here without setting it left the caller
+       * believing every cache-hit import was non-blob, so no import that
+       * shared a buffer object with an earlier one was ever described. Report
+       * the value the cached resource already carries.
+       */
+      *blob_mem = res->blob_mem;
+
       goto done;
    }
 
@@ -615,6 +624,36 @@ virgl_drm_winsys_resource_create_handle(struct virgl_winsys *qws,
    _mesa_hash_table_insert(qdws->bo_handles, (void *)(uintptr_t)res->bo_handle, res);
 
 done:
+   /* Record which plane of this buffer object the caller just imported.
+    *
+    * Planes of one multi-planar frame share a buffer object, so they arrive
+    * here as repeated imports of the same virgl_hw_res distinguished only by
+    * byte offset. The index of an offset in first-seen order is its plane
+    * index, and that index is what the caller stores in the resource metadata
+    * and what the host later uses to pick a per-plane image. Without it every
+    * plane presents as plane 0 and the chroma plane inherits luma's type.
+    */
+   if (res) {
+      uint32_t off = whandle->offset;
+      uint32_t idx = 0;
+      bool found = false;
+
+      for (uint32_t i = 0; i < res->import_plane_count; i++) {
+         if (res->import_plane_offsets[i] == off) {
+            idx = i;
+            found = true;
+            break;
+         }
+      }
+      if (!found && res->import_plane_count < VIRGL_MAX_PLANE_COUNT) {
+         idx = res->import_plane_count;
+         res->import_plane_offsets[idx] = off;
+         res->import_plane_strides[idx] = whandle->stride;
+         res->import_plane_count++;
+      }
+      *plane = idx;
+   }
+
    mtx_unlock(&qdws->bo_handles_mutex);
    return res;
 }

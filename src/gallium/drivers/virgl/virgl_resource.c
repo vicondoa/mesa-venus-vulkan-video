@@ -942,6 +942,60 @@ static struct pipe_resource *virgl_resource_from_handle(struct pipe_screen *scre
                                  plane_count,
                                  plane_strides,
                                  plane_offsets);
+   } else if (res->blob_mem && plane > 0 &&
+              (vs->caps.caps.v2.host_feature_check_version >= 18 ||
+               (vs->caps.caps.v2.capability_bits_v2 & VIRGL_CAP_V2_UNTYPED_RESOURCE))) {
+      /* A further plane of a buffer whose first plane already typed it.
+       *
+       * A multi-planar frame is one allocation, so a client that imports its
+       * planes as separate images hands us the same buffer object twice. The
+       * first import types it from plane 0 and the host builds one texture of
+       * plane 0's format and geometry. Nothing then describes the second
+       * plane, so sampling it reads plane 0's texture -- for NV12 that is the
+       * luma plane, and the chroma plane is not merely mistyped but lies
+       * beyond the extent of the texture that was created, since luma is
+       * padded before chroma begins.
+       *
+       * Describe the buffer as the planar whole so the host can build a
+       * per-plane image for this plane. The host keeps the existing type and
+       * adds the plane, so the first plane's texture is undisturbed.
+       *
+       * The chroma import carries everything needed: for the two-plane YUV
+       * formats the chroma stride equals the luma stride, and plane 0 is at
+       * offset 0 by construction, so no state from the first import is
+       * required here.
+       */
+      enum virgl_formats planar = VIRGL_FORMAT_NONE;
+      switch (res->b.format) {
+      case PIPE_FORMAT_RG88_UNORM:
+      case PIPE_FORMAT_R8G8_UNORM:
+         planar = VIRGL_FORMAT_NV12;
+         break;
+      default:
+         break;
+      }
+
+      if (planar != VIRGL_FORMAT_NONE && plane < VIRGL_MAX_PLANE_COUNT) {
+         uint32_t strides[VIRGL_MAX_PLANE_COUNT] = { 0 };
+         uint32_t offsets[VIRGL_MAX_PLANE_COUNT] = { 0 };
+
+         for (uint32_t i = 0; i <= plane; i++)
+            strides[i] = res->metadata.stride[0];
+         offsets[0] = 0;
+         offsets[plane] = res->metadata.plane_offset;
+
+         vs->vws->resource_set_type(vs->vws,
+                                    res->hw_res,
+                                    planar,
+                                    pipe_to_virgl_bind(vs, res->b.bind),
+                                    res->b.width0 * 2,
+                                    res->b.height0 * 2,
+                                    usage,
+                                    res->metadata.modifier,
+                                    plane + 1,
+                                    strides,
+                                    offsets);
+      }
    }
 
    virgl_texture_init(res);

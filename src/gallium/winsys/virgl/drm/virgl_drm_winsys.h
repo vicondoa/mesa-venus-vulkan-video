@@ -58,6 +58,22 @@ struct virgl_hw_res {
    /* false when the resource is known to be typed */
    bool maybe_untyped;
 
+   /* Plane views imported over this same buffer object.
+    *
+    * A multi-planar frame is one allocation, so importing its planes
+    * separately -- which is what clients that build one EGLImage per plane do
+    * -- resolves every plane fd to the same GEM handle and therefore to this
+    * same virgl_hw_res. Without recording which byte offsets have been seen,
+    * every plane looks like plane 0 of a fresh buffer and the second import
+    * silently inherits the first plane's format and geometry.
+    *
+    * Offsets are recorded in first-seen order, so the index of an offset is
+    * the plane index. Plane 0 is at offset 0 by construction.
+    */
+   uint32_t import_plane_count;
+   uint32_t import_plane_offsets[VIRGL_MAX_PLANE_COUNT];
+   uint32_t import_plane_strides[VIRGL_MAX_PLANE_COUNT];
+
    /* true when the resource is imported or exported */
    int external;
 
