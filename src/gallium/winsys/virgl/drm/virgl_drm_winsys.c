@@ -572,6 +572,14 @@ virgl_drm_winsys_resource_create_handle(struct virgl_winsys *qws,
        * believing every cache-hit import was non-blob, so no import that
        * shared a buffer object with an earlier one was ever described. Report
        * the value the cached resource already carries.
+       *
+       * This is one of four interlocking defects between a decoded NV12 frame
+       * and a correct picture, and none of them is sufficient alone: the plane
+       * index must survive the import, the import must be describable, a wider
+       * description must be allowed to leave the guest, and the host must
+       * build that plane in a fourcc it accepts. Fixing any subset moves the
+       * symptom rather than removing it. The full account is in
+       * labs/venus-vulkan-video/SOLUTION.md in the d2b repository.
        */
       *blob_mem = res->blob_mem;
 
