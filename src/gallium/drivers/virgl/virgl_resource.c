@@ -968,7 +968,6 @@ static struct pipe_resource *virgl_resource_from_handle(struct pipe_screen *scre
       enum virgl_formats planar = VIRGL_FORMAT_NONE;
       switch (res->b.format) {
       case PIPE_FORMAT_RG88_UNORM:
-      case PIPE_FORMAT_R8G8_UNORM:
          planar = VIRGL_FORMAT_NV12;
          break;
       default:
